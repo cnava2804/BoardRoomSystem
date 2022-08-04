@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220727041624_Initial-Creation")]
+    partial class InitialCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,42 +53,6 @@ namespace BoardRoomSystem.Migrations
                     b.HasIndex("State_Id");
 
                     b.ToTable("MeetingRooms");
-                });
-
-            modelBuilder.Entity("BoardRoomSystem.Models.Reservations", b =>
-                {
-                    b.Property<int>("Reservation_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Reservation_Delegate")
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<string>("Reservation_Description")
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<DateTime>("Reservation_EndtDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reservation_Location")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Reservation_NumbPeople")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reservation_Recipient")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Reservation_StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reservation_Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Reservation_Id");
-
-                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.States", b =>

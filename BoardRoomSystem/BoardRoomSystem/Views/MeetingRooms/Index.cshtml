@@ -1,0 +1,62 @@
+﻿@model IEnumerable<BoardRoomSystem.Models.MeetingRooms>
+
+@{
+    ViewData["Title"] = "MeetingRooms";
+}
+
+<h2>Lista de Sala de Juntas</h2>
+
+<div class="row search">
+    <div class="col-auto">
+        <input type="text" class="form-control-plaintext" id="txt-search" placeholder="Buscar..." />
+    </div>
+    <div class="col-auto">
+        <a class="btn btn-secondary" onclick="departament_search()" id="search-link"><i class="fas fa-search"></i></a>
+        <a asp-action="Create" class="btn btn-success"><i class="far fa-file"></i> Nuevo</a>
+    </div>
+</div>
+<br />
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.MTGR_Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MTGR_Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MTGR_MaxNumbPeople)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MTGR_Location)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.State_Id)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(model => item.MTGR_Name)</td>
+                    <td>@Html.DisplayFor(model => item.MTGR_Description)</td>
+                    <td>@Html.DisplayFor(model => item.MTGR_MaxNumbPeople)</td>
+                    <td>@Html.DisplayFor(model => item.MTGR_Location)</td>
+                    <td>@Html.DisplayFor(model => item.State_Id)</td>
+                    <td>
+                        <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.MTGR_Id"><i class="fas fa-edit"></i> Editar</a>
+                        <a asp-action="Details" class="btn btn-success" asp-route-id="@item.MTGR_Id"><i class="far fa-file-alt"></i> Detalles</a>
+                        <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.MTGR_Id"><i class="far fa-trash-alt"></i> Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+

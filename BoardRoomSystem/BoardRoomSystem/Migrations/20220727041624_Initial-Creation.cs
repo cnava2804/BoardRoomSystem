@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BoardRoomSystem.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialCreation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,12 +40,26 @@ namespace BoardRoomSystem.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
+                    Discriminator = table.Column<string>(nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(100)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(100)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "States",
+                columns: table => new
+                {
+                    State_Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    state_Name = table.Column<string>(type: "nvarchar(30)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_States", x => x.State_Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,6 +168,30 @@ namespace BoardRoomSystem.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "MeetingRooms",
+                columns: table => new
+                {
+                    MTGR_Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MTGR_Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MTGR_Description = table.Column<string>(type: "nvarchar(300)", nullable: true),
+                    MTGR_MaxNumbPeople = table.Column<int>(nullable: false),
+                    MTGR_Location = table.Column<string>(type: "nvarchar(200)", nullable: true),
+                    MTGR_Image = table.Column<byte[]>(nullable: true),
+                    State_Id = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeetingRooms", x => x.MTGR_Id);
+                    table.ForeignKey(
+                        name: "FK_MeetingRooms_States_State_Id",
+                        column: x => x.State_Id,
+                        principalTable: "States",
+                        principalColumn: "State_Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -192,6 +230,11 @@ namespace BoardRoomSystem.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeetingRooms_State_Id",
+                table: "MeetingRooms",
+                column: "State_Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -212,10 +255,16 @@ namespace BoardRoomSystem.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "MeetingRooms");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "States");
         }
     }
 }
