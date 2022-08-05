@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220804220605_Creation-Initial4")]
+    partial class CreationInitial4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,7 @@ namespace BoardRoomSystem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BoardRoomSystem.Models.AreasViewModel", b =>
+            modelBuilder.Entity("BoardRoomSystem.Models.Areas", b =>
                 {
                     b.Property<int>("Area_Id")
                         .ValueGeneratedOnAdd()
@@ -31,7 +33,7 @@ namespace BoardRoomSystem.Migrations
 
                     b.HasKey("Area_Id");
 
-                    b.ToTable("AreasViewModels");
+                    b.ToTable("Areas");
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.Buildings", b =>
@@ -61,7 +63,7 @@ namespace BoardRoomSystem.Migrations
 
                     b.HasKey("Location_Id");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.MeetingRooms", b =>
@@ -406,7 +408,7 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("BoardRoomSystem.Models.Reservations", b =>
                 {
-                    b.HasOne("BoardRoomSystem.Models.AreasViewModel", "Areas")
+                    b.HasOne("BoardRoomSystem.Models.Areas", "Areas")
                         .WithMany("Reservation")
                         .HasForeignKey("Area_Id")
                         .OnDelete(DeleteBehavior.Cascade)

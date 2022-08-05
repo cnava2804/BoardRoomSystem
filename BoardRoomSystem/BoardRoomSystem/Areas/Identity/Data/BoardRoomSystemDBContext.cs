@@ -20,7 +20,11 @@ namespace BoardRoomSystem.Data
         public DbSet<MeetingRooms> MeetingRooms { get; set; }
         public DbSet<States> States { get; set; }
         public DbSet<Reservations> Reservations { get; set; }
+        public DbSet<AreasViewModel> AreasViewModels { get; set; }
+        public DbSet<Buildings> Buildings { get; set; }
         public DbSet<AplicationUser> AplicationUsers { get; set; }
+        public DbSet<Location> Locations { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

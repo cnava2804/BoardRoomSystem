@@ -19,9 +19,9 @@ namespace BoardRoomSystem.Models
         [MinLength(5, ErrorMessage = "Debe tener mas de 5 caracteres.")]
         public string MTGR_Name { get; set; }
         [Column(TypeName = "nvarchar(300)")]
-        [Display(Name = "Descripción")]
+        [Display(Name = "Equipamiento")]
         public string MTGR_Description { get; set; }
-        [Display(Name = "Número máximo de personas")]
+        [Display(Name = "Capacidad máxima de personas")]
         public int MTGR_MaxNumbPeople { get; set; }
        
         [Column(TypeName = "nvarchar(200)")]
@@ -30,7 +30,9 @@ namespace BoardRoomSystem.Models
         [Display(Name = "Imagen")]
         public byte[] MTGR_Image { get; set; }
 
-        //public IEnumerable<Position> Positions { get; set; }
+        [Display(Name ="Número de Sala")]
+        public int MTGR_NumbRoom { get; set; }
+        public IEnumerable<Reservations> Reservations { get; set; }
 
 
         [Display(Name = "Estado")]
@@ -38,5 +40,10 @@ namespace BoardRoomSystem.Models
 
         [ForeignKey("State_Id")]
         public States States { get; set; }
+
+        [Display(Name ="Edificios")]
+        public int Building_Id { get; set; }
+        [ForeignKey("Building_Id")]
+        public Buildings Buildings { get; set; }
     }
 }
