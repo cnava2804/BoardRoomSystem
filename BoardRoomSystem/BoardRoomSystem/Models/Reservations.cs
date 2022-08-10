@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BoardRoomSystem.Areas.Identity.Data;
 
 namespace BoardRoomSystem.Models
 {
@@ -28,22 +30,62 @@ namespace BoardRoomSystem.Models
         [Display(Name = "Solicitada Por:")]
         public string Reservation_Delegate { get; set; }
 
-        [Display(Name = "Ubicación")]
-        public int Location_id { get; set; }
+        //[Display(Name = "Ubicación")]
+        //public int Location_id { get; set; }
 
-        [ForeignKey("Location_id")]
-        public Location Location { get; set; }
+        //[ForeignKey("Location_id")]
+        //public Location Location { get; set; }
 
-        [Display(Name = "Área quien la solicita")]
-        public int Area_Id { get; set; }
+        //[Display(Name = "Área quien la solicita")]
+        //public int Area_Id { get; set; }
 
-        [ForeignKey("Area_Id")]
-        public AreasViewModel Areas { get; set; }
+        //[ForeignKey("Area_Id")]
+        //public AreasViewModel Areas { get; set; }
 
-        [Display(Name = "Sala a Reservar")]
-        public int MTGR_Id { get; set; }
+        //[Display(Name = "Sala a Reservar")]
+        //public int MTGR_Id { get; set; }
 
-        [ForeignKey("MTGR_Id")]
-        public MeetingRooms MeetingRooms { get; set; }
+        //[ForeignKey("MTGR_Id")]
+        //public MeetingRooms MeetingRooms { get; set; }
+
+        //Relational data
+
+        public virtual Location Location { get; set; }
+        public virtual AreasViewModel AreasViewModel { get; set; }
+        public virtual MeetingRooms MeetingRooms { get; set; }
+        public virtual ApplicationUser User { get; set; }
+
+        public Reservations(IFormCollection form, Location location, ApplicationUser user)
+        {
+            User = user;
+            Reservation_Subject = form["Reservations.Reservation_Subject"].ToString();
+            Reservation_Recipient = form["Reservations.Reservation_Recipient"].ToString();
+            Reservation_StartDate = DateTime.Parse(form["Reservations.Reservation_StartDate"].ToString());
+            Reservation_EndtDate = DateTime.Parse(form["Reservations.Reservation_EndtDate"].ToString());
+            Reservation_NumbPeople = Convert.ToInt32(form["Reservations.Reservation_NumbPeople"].ToString());
+            Reservation_Description = form["Reservations.Reservation_Description"].ToString();
+            Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
+            Location = location;
+        }
+
+        public void UpdateReservations(IFormCollection form, Location location, ApplicationUser user)
+        {
+            User = user;
+            Reservation_Subject = form["Reservations.Reservation_Subject"].ToString();
+            Reservation_Recipient = form["Reservations.Reservation_Recipient"].ToString();
+            Reservation_StartDate = DateTime.Parse(form["Reservations.Reservation_StartDate"].ToString());
+            Reservation_EndtDate = DateTime.Parse(form["Reservations.Reservation_EndtDate"].ToString());
+            Reservation_NumbPeople = Convert.ToInt32(form["Reservations.Reservation_NumbPeople"].ToString());
+            Reservation_Description = form["Reservations.Reservation_Description"].ToString();
+            Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
+            Location = location;
+        }
+
+        public Reservations()
+        {
+
+        }
+
+
     }
 }

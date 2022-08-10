@@ -11,7 +11,8 @@ namespace BoardRoomSystem.Models
         [Column(TypeName = "nvarchar(30)")]
         public int state_Name { get; set; }
 
-        public IEnumerable<MeetingRooms> MeetingRooms { get; set; }
+        public virtual ICollection<MeetingRooms> MeetingRooms { get; set; }
+
 
     }
 }

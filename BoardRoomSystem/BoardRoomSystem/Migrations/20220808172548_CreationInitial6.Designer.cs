@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220808172548_CreationInitial6")]
+    partial class CreationInitial6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,7 +21,65 @@ namespace BoardRoomSystem.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", b =>
+            modelBuilder.Entity("BoardRoomSystem.Areas.Identity.Data.AplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AplicationUsers");
+                });
+
+            modelBuilder.Entity("BoardRoomSystem.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -37,12 +97,6 @@ namespace BoardRoomSystem.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -142,7 +196,7 @@ namespace BoardRoomSystem.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BuildingsBuilding_Id")
+                    b.Property<int>("Building_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("MTGR_Description")
@@ -165,14 +219,14 @@ namespace BoardRoomSystem.Migrations
                     b.Property<int>("MTGR_NumbRoom")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StatesState_Id")
+                    b.Property<int>("State_Id")
                         .HasColumnType("int");
 
                     b.HasKey("MTGR_Id");
 
-                    b.HasIndex("BuildingsBuilding_Id");
+                    b.HasIndex("Building_Id");
 
-                    b.HasIndex("StatesState_Id");
+                    b.HasIndex("State_Id");
 
                     b.ToTable("MeetingRooms");
                 });
@@ -385,28 +439,32 @@ namespace BoardRoomSystem.Migrations
                 {
                     b.HasOne("BoardRoomSystem.Models.Buildings", "Buildings")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("BuildingsBuilding_Id");
+                        .HasForeignKey("Building_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BoardRoomSystem.Models.States", "States")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("StatesState_Id");
+                        .HasForeignKey("State_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.Reservations", b =>
                 {
                     b.HasOne("BoardRoomSystem.Models.AreasViewModel", "AreasViewModel")
-                        .WithMany("Reservations")
+                        .WithMany("Reservation")
                         .HasForeignKey("AreasViewModelArea_Id");
 
                     b.HasOne("BoardRoomSystem.Models.Location", "Location")
-                        .WithMany("Reservations")
+                        .WithMany("Reservation")
                         .HasForeignKey("Location_Id");
 
                     b.HasOne("BoardRoomSystem.Models.MeetingRooms", "MeetingRooms")
                         .WithMany("Reservations")
                         .HasForeignKey("MeetingRoomsMTGR_Id");
 
-                    b.HasOne("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", "User")
+                    b.HasOne("BoardRoomSystem.Models.ApplicationUser", "User")
                         .WithMany("Reservations")
                         .HasForeignKey("UserId");
                 });
@@ -422,7 +480,7 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", null)
+                    b.HasOne("BoardRoomSystem.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -431,7 +489,7 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", null)
+                    b.HasOne("BoardRoomSystem.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -446,7 +504,7 @@ namespace BoardRoomSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", null)
+                    b.HasOne("BoardRoomSystem.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -455,7 +513,7 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("BoardRoomSystem.Areas.Identity.Data.ApplicationUser", null)
+                    b.HasOne("BoardRoomSystem.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

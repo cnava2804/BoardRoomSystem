@@ -6,6 +6,11 @@
 
 <h2>Reservaciones</h2>
 
+@if (ViewData["Alert"] != null)
+{
+    <h3>@ViewData["Alert"]</h3>
+}
+
 <div class="row search">
     <div class="col-auto">
         <input type="text" class="form-control-plaintext" id="txt-search" placeholder="Buscar..." />
@@ -44,7 +49,7 @@
             {
                 <tr>
                     <td>@Html.DisplayFor(model => item.Reservation_Subject)</td>
-                    <td>@Html.DisplayFor(model => item.Location_id)</td>
+                    <td>@Html.DisplayFor(model => item.Location.Location_Id)</td>
                     <td>@Html.DisplayFor(model => item.Reservation_StartDate)</td>
                     <td>@Html.DisplayFor(model => item.Reservation_EndtDate)</td>
                     <td>@Html.DisplayFor(model => item.Reservation_Recipient)</td>

@@ -14,6 +14,6 @@ namespace BoardRoomSystem.Models
 
         public string Building_Name { get; set; }
 
-        public IEnumerable<MeetingRooms> MeetingRooms { get; set; }
+        public virtual ICollection<MeetingRooms> MeetingRooms { get; set; }
     }
 }

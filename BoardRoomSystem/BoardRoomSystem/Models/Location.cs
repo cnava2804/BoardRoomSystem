@@ -14,6 +14,8 @@ namespace BoardRoomSystem.Models
         [Column(TypeName = "nvarchar(200)")]
         public string Location_Name { get; set; }
 
-        public IEnumerable<Reservations> Reservation { get; set; }
+        //public IEnumerable<Reservations> Reservation { get; set; }
+        //Relational data
+        public virtual ICollection<Reservations> Reservations { get; set; }
     }
 }

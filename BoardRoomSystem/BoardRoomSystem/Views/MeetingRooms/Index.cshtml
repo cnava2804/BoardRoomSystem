@@ -33,9 +33,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.MTGR_Location)
                 </th>
-                <th>
+                @*<th>
                     @Html.DisplayNameFor(model => model.State_Id)
-                </th>
+                </th>*@
                 <th></th>
             </tr>
         </thead>
@@ -47,7 +47,7 @@
                     <td>@Html.DisplayFor(model => item.MTGR_Description)</td>
                     <td>@Html.DisplayFor(model => item.MTGR_MaxNumbPeople)</td>
                     <td>@Html.DisplayFor(model => item.MTGR_Location)</td>
-                    <td>@Html.DisplayFor(model => item.State_Id)</td>
+                    @*<td>@Html.DisplayFor(model => item.State_Id)</td>*@
                     <td>
                         <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.MTGR_Id"><i class="fas fa-edit"></i> Editar</a>
                         <a asp-action="Details" class="btn btn-success" asp-route-id="@item.MTGR_Id"><i class="far fa-file-alt"></i> Detalles</a>

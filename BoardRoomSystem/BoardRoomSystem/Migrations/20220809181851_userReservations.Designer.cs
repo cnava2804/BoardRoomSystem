@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220809181851_userReservations")]
+    partial class userReservations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,7 +144,7 @@ namespace BoardRoomSystem.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BuildingsBuilding_Id")
+                    b.Property<int>("Building_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("MTGR_Description")
@@ -165,14 +167,14 @@ namespace BoardRoomSystem.Migrations
                     b.Property<int>("MTGR_NumbRoom")
                         .HasColumnType("int");
 
-                    b.Property<int?>("StatesState_Id")
+                    b.Property<int>("State_Id")
                         .HasColumnType("int");
 
                     b.HasKey("MTGR_Id");
 
-                    b.HasIndex("BuildingsBuilding_Id");
+                    b.HasIndex("Building_Id");
 
-                    b.HasIndex("StatesState_Id");
+                    b.HasIndex("State_Id");
 
                     b.ToTable("MeetingRooms");
                 });
@@ -385,17 +387,21 @@ namespace BoardRoomSystem.Migrations
                 {
                     b.HasOne("BoardRoomSystem.Models.Buildings", "Buildings")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("BuildingsBuilding_Id");
+                        .HasForeignKey("Building_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BoardRoomSystem.Models.States", "States")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("StatesState_Id");
+                        .HasForeignKey("State_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.Reservations", b =>
                 {
                     b.HasOne("BoardRoomSystem.Models.AreasViewModel", "AreasViewModel")
-                        .WithMany("Reservations")
+                        .WithMany("Reservation")
                         .HasForeignKey("AreasViewModelArea_Id");
 
                     b.HasOne("BoardRoomSystem.Models.Location", "Location")

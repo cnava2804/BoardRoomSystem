@@ -1,4 +1,5 @@
 ﻿using BoardRoomSystem.Areas.Identity.Data;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -32,18 +33,33 @@ namespace BoardRoomSystem.Models
 
         [Display(Name ="Número de Sala")]
         public int MTGR_NumbRoom { get; set; }
-        public IEnumerable<Reservations> Reservations { get; set; }
+        public virtual ICollection<Reservations> Reservations { get; set; }
 
 
-        [Display(Name = "Estado")]
-        public int State_Id { get; set; }
+        //[Display(Name = "Estado")]
+        //public int State_Id { get; set; }
 
-        [ForeignKey("State_Id")]
-        public States States { get; set; }
+        //[ForeignKey("State_Id")]
+        //public States States { get; set; }
 
-        [Display(Name ="Edificios")]
-        public int Building_Id { get; set; }
-        [ForeignKey("Building_Id")]
-        public Buildings Buildings { get; set; }
+        //[Display(Name ="Edificios")]
+        //public int Building_Id { get; set; }
+        //[ForeignKey("Building_Id")]
+        //public Buildings Buildings { get; set; }
+
+        public virtual States States { get; set; }
+        public virtual Buildings Buildings { get; set; }
+
+        //public MeetingRooms(IFormCollection form, States states, Buildings buildings)
+        //{
+        //    MTGR_Name = form["Reservations.Reservation_Subject"].ToString();
+        //    Reservation_Recipient = form["Reservations.Reservation_Recipient"].ToString();
+        //    Reservation_StartDate = DateTime.Parse(form["Reservations.Reservation_StartDate"].ToString());
+        //    Reservation_EndtDate = DateTime.Parse(form["Reservations.Reservation_EndtDate"].ToString());
+        //    Reservation_NumbPeople = Convert.ToInt32(form["Reservations.Reservation_NumbPeople"].ToString());
+        //    Reservation_Description = form["Reservations.Reservation_Description"].ToString();
+        //    Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
+        //    Location = location;
+        //}
     }
 }

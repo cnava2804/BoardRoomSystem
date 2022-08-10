@@ -20,7 +20,7 @@ namespace BoardRoomSystem.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("BoardRoomSystemDBContextConnection")));
 
-                services.AddDefaultIdentity<AplicationUser>(options =>
+                services.AddDefaultIdentity<ApplicationUser>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.Password.RequireLowercase = false;

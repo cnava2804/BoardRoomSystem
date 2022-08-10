@@ -1,16 +1,17 @@
 ﻿@model BoardRoomSystem.Models.ViewModels.ReservationsViewModel
+@using System.Web
 
 @{
-    ViewData["Title"] = "Crear Reservación";
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-    <h2>Crear</h2>
+    <h2>Editar</h2>
     <hr />
 
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Create" id="create-reservation">
+            <form asp-action="Edit" id="edit-reservation">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Reservations.Reservation_Subject" class="control-label"></label>
@@ -60,10 +61,34 @@
         </div>
     </div>
 
+<script>
+    function SetSelectedLocation(Location)
+    {
+        var locations = document.getElementById('Location'), loc, i;
+
+        for (i = 0; i < locations.length; i++ ) {
+            loc = locations[i];
+            if (loc.innerText === Location) {
+                loc.selected = "true";
+            }
+        }
+    }
+
+    var reservationlocation = '@Html.Raw(Model.LocationName)';
+
+    document.addEventListener('DOMContentLoaded', function() {
+    SetSelectedLocation(reservationlocation);
+    });
+
+
+</script>
+
 
     @section Scripts {
         @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     }
 
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
