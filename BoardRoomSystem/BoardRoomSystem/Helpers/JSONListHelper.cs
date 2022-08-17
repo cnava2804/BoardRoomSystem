@@ -7,12 +7,12 @@ namespace BoardRoomSystem.Helpers
 {
     public static class JSONListHelper
     {
-        public static string GetEventListJSONString(List<Models.Reservations> reservations)
+        public static string GetReservationListJSONString(List<Models.Reservations> reservations)
         {
-            var reservationlist = new List<Event>();
+            var reservationlist = new List<Reservations>();
             foreach (var model in reservations)
             {
-                var myreservations = new Event()
+                var myreservations = new Reservations()
                 {
                     id = model.Reservation_Id,
                     start = model.Reservation_StartDate,
@@ -43,7 +43,7 @@ namespace BoardRoomSystem.Helpers
         }
     }
 
-    public class Event
+    public class Reservations
     {
         public int id { get; set; }
         public string title { get; set; }

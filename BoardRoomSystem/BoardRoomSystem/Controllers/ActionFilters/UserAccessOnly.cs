@@ -25,10 +25,10 @@ namespace BoardRoomSystem.Controllers.ActionFilters
                     var username = context.HttpContext.User.Identity.Name;
                     if (username != null)
                     {
-                        var myevent = _dal.GetReservations(id);
-                        if (myevent.User != null)
+                        var myreservation = _dal.GetReservations(id);
+                        if (myreservation.User != null)
                         {
-                            if (myevent.User.UserName != username)
+                            if (myreservation.User.UserName != username)
                             {
                                 context.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "NotFound" }));
                             }

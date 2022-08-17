@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace BoardRoomSystem.Controllers
 {
     [Authorize]
-    public class AreasController : Controller
+    public class StatesController : Controller
     {
         private readonly BoardRoomSystemDBContext dBContext;
 
-        public AreasController(BoardRoomSystemDBContext dBContext)
+        public StatesController(BoardRoomSystemDBContext dBContext)
         {
             this.dBContext = dBContext;
         }
 
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = dBContext.AreasViewModels.Include(a => a.Area_Id);
-            return View(await dBContext.AreasViewModels.ToListAsync());
+            var applicationDbContext = dBContext.States.Include(s => s.State_Id);
+            return View(await dBContext.States.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? Id)
@@ -30,14 +30,14 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.Area_Id == Id);
+            var statesViewModel = await dBContext.States.FirstOrDefaultAsync(s => s.State_Id == Id);
 
-            if (areasViewModel == null)
+            if (statesViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(areasViewModel);
+            return View(statesViewModel);
         }
 
         //Crear por medio de vista
@@ -49,17 +49,17 @@ namespace BoardRoomSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AreasViewModel areasViewModel)
+        public async Task<IActionResult> Create(States statesViewModel)
         {
             if (ModelState.IsValid)
             {
-                dBContext.Add(areasViewModel);
+                dBContext.Add(statesViewModel);
                 await dBContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
 
             }
 
-            return View(areasViewModel);
+            return View(statesViewModel);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -69,21 +69,21 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var areasViewModel = await dBContext.AreasViewModels.FindAsync(id);
+            var statesViewModel = await dBContext.States.FindAsync(id);
 
-            if (areasViewModel == null)
+            if (statesViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(areasViewModel);
+            return View(statesViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, AreasViewModel areasViewModel)
+        public async Task<IActionResult> Edit(int id, States statesViewModel)
         {
-            if (id != areasViewModel.Area_Id)
+            if (id != statesViewModel.State_Id)
             {
                 return NotFound();
             }
@@ -91,7 +91,7 @@ namespace BoardRoomSystem.Controllers
             {
                 try
                 {
-                    dBContext.Update(areasViewModel);
+                    dBContext.Update(statesViewModel);
                     await dBContext.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -102,7 +102,7 @@ namespace BoardRoomSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(areasViewModel);
+            return View(statesViewModel);
         }
 
 
@@ -112,22 +112,22 @@ namespace BoardRoomSystem.Controllers
             {
                 return NotFound();
             }
-            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.Area_Id == id);
+            var statesViewModel = await dBContext.States.FirstOrDefaultAsync(s => s.State_Id == id);
 
-            if (areasViewModel == null)
+            if (statesViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(areasViewModel);
+            return View(statesViewModel);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id) 
+        public async Task<IActionResult> Delete(int id)
         {
-            var areasViewModel = await dBContext.AreasViewModels.FindAsync(id);
-            dBContext.AreasViewModels.Remove(areasViewModel);
+            var statesViewModel = await dBContext.States.FindAsync(id);
+            dBContext.States.Remove(statesViewModel);
             await dBContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

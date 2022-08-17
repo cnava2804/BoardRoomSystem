@@ -9,7 +9,8 @@ namespace BoardRoomSystem.Models
         [Key]
         public int State_Id { get; set; }
         [Column(TypeName = "nvarchar(30)")]
-        public int state_Name { get; set; }
+        [Display(Name ="Estado")]
+        public string state_Name { get; set; }
 
         public virtual ICollection<MeetingRooms> MeetingRooms { get; set; }
 

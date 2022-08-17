@@ -1,5 +1,6 @@
 ﻿using BoardRoomSystem.Data;
 using BoardRoomSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 namespace BoardRoomSystem.Controllers
 {
+    [Authorize]
     public class MeetingRoomsController : Controller
     {
         private readonly BoardRoomSystemDBContext dBContext;
@@ -21,7 +23,7 @@ namespace BoardRoomSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = dBContext.MeetingRooms.Include(d => d.States);
+            var applicationDbContext = dBContext.MeetingRooms.Include(d => d.States).Include(l => l.Location);
             return View(await dBContext.MeetingRooms.ToListAsync());
         }
 
@@ -32,7 +34,9 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var meetingR = await dBContext.MeetingRooms.FirstOrDefaultAsync(m => m.MTGR_Id == id);
+            var meetingR = await dBContext.MeetingRooms
+                .Include(x => x.States)
+                .Include(x => x.Location).FirstOrDefaultAsync(x => x.MTGR_Id == id);
 
             if (meetingR == null)
             {
@@ -49,31 +53,25 @@ namespace BoardRoomSystem.Controllers
         public IActionResult Create()
         {
             ViewData["State_Id"] = new SelectList(dBContext.States, "State_Id", "state_Name");
+            ViewData["Location_Id"] = new SelectList(dBContext.Locations, "Location_Id", "Location_Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MeetingRooms meetingRoom)
+        public async Task<IActionResult> Create([Bind("MTGR_Id,MTGR_Name,MTGR_Description,MTGR_MaxNumbPeople,MTGR_Image,MTGR_NumbRoom,State_Id,Location_Id")] MeetingRooms meetingRoom)
         {
 
             if (ModelState.IsValid)
             {
-                //try
-                //{
-                //    HttpPostedFileBase file = Request.Files["ImageData"];
-                //    byte[] img = ConvertToBytes(file);
-                //}
-                //catch (Exception)
-                //{
-
-                //    throw;
-                //}
 
                 dBContext.Add(meetingRoom);
                 await dBContext.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["State_Id"] = new SelectList(dBContext.States, "State_Id", "state_Name", meetingRoom.States);
+            ViewData["Location_Id"] = new SelectList(dBContext.Locations, "Location_Id", "Location_Name", meetingRoom.Location);
+
             return View(meetingRoom);
         }
 
@@ -85,19 +83,21 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var meetingR = await dBContext.MeetingRooms.FindAsync(id);
+            var meetingRoom = await dBContext.MeetingRooms.FindAsync(id);
 
-            if (meetingR == null)
+            if (meetingRoom == null)
             {
                 return NotFound();
             }
+            ViewData["State_Id"] = new SelectList(dBContext.States, "State_Id", "state_Name", meetingRoom.States);
+            ViewData["Location_Id"] = new SelectList(dBContext.Locations, "Location_Id", "Location_Name", meetingRoom.Location);
 
-            return View(meetingR);
+            return View(meetingRoom);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, MeetingRooms meetingR)
+        public async Task<IActionResult> Edit(int id, [Bind("MTGR_Id,MTGR_Name,MTGR_Description,MTGR_MaxNumbPeople,MTGR_Image,MTGR_NumbRoom,State_Id,Location_Id")] MeetingRooms meetingR)
         {
             if (id != meetingR.MTGR_Id)
             {
@@ -118,6 +118,8 @@ namespace BoardRoomSystem.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["State_Id"] = new SelectList(dBContext.States, "State_Id", "state_Name", meetingR.States);
+            ViewData["Location_Id"] = new SelectList(dBContext.Locations, "Location_Id", "Location_Name", meetingR.Location);
 
             return View(meetingR);
         }
@@ -129,7 +131,9 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var meetingR = await dBContext.MeetingRooms.FirstOrDefaultAsync(m => m.MTGR_Id == id);
+            var meetingR = await dBContext.MeetingRooms
+               .Include(x => x.States)
+               .Include(x => x.Location).FirstOrDefaultAsync(x => x.MTGR_Id == id);
 
             if (meetingR == null)
             {

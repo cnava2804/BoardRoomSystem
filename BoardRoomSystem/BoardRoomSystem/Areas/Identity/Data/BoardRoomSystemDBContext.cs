@@ -27,7 +27,6 @@ namespace BoardRoomSystem.Data
         public DbSet<States> States { get; set; }
         public DbSet<Reservations> Reservations { get; set; }
         public DbSet<AreasViewModel> AreasViewModels { get; set; }
-        public DbSet<Buildings> Buildings { get; set; }
         public DbSet<ApplicationUser> AplicationUsers { get; set; }
         public DbSet<Location> Locations { get; set; }
 

@@ -25,30 +25,27 @@ namespace BoardRoomSystem.Models
         [Display(Name = "Capacidad máxima de personas")]
         public int MTGR_MaxNumbPeople { get; set; }
        
-        [Column(TypeName = "nvarchar(200)")]
-        [Display(Name = "Ubicación")]
-        public string MTGR_Location { get; set; }
         [Display(Name = "Imagen")]
-        public byte[] MTGR_Image { get; set; }
+        public string MTGR_Image { get; set; }
 
         [Display(Name ="Número de Sala")]
         public int MTGR_NumbRoom { get; set; }
         public virtual ICollection<Reservations> Reservations { get; set; }
 
 
-        //[Display(Name = "Estado")]
-        //public int State_Id { get; set; }
+        [Display(Name = "Estado")]
+        public int State_Id { get; set; }
 
-        //[ForeignKey("State_Id")]
-        //public States States { get; set; }
-
-        //[Display(Name ="Edificios")]
-        //public int Building_Id { get; set; }
-        //[ForeignKey("Building_Id")]
-        //public Buildings Buildings { get; set; }
-
+        [ForeignKey("State_Id")]
         public virtual States States { get; set; }
-        public virtual Buildings Buildings { get; set; }
+
+        [Display(Name = "Ubicación")]
+        public int Location_Id { get; set; }
+        [ForeignKey("Location_Id")]
+        public virtual Location Location { get; set; }
+
+        //public virtual States States { get; set; }
+        //public virtual Buildings Buildings { get; set; }
 
         //public MeetingRooms(IFormCollection form, States states, Buildings buildings)
         //{

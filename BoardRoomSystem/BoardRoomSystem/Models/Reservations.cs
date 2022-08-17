@@ -55,7 +55,7 @@ namespace BoardRoomSystem.Models
         public virtual MeetingRooms MeetingRooms { get; set; }
         public virtual ApplicationUser User { get; set; }
 
-        public Reservations(IFormCollection form, Location location, ApplicationUser user)
+        public Reservations(IFormCollection form, Location location, ApplicationUser user, AreasViewModel areasViewModel, MeetingRooms meetingRooms)
         {
             User = user;
             Reservation_Subject = form["Reservations.Reservation_Subject"].ToString();
@@ -66,9 +66,11 @@ namespace BoardRoomSystem.Models
             Reservation_Description = form["Reservations.Reservation_Description"].ToString();
             Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
             Location = location;
+            AreasViewModel = areasViewModel;
+            MeetingRooms = meetingRooms;
         }
 
-        public void UpdateReservations(IFormCollection form, Location location, ApplicationUser user)
+        public void UpdateReservations(IFormCollection form, Location location, ApplicationUser user, AreasViewModel areasViewModel, MeetingRooms meetingRooms)
         {
             User = user;
             Reservation_Subject = form["Reservations.Reservation_Subject"].ToString();
@@ -79,6 +81,8 @@ namespace BoardRoomSystem.Models
             Reservation_Description = form["Reservations.Reservation_Description"].ToString();
             Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
             Location = location;
+            AreasViewModel = areasViewModel;
+            MeetingRooms = meetingRooms;
         }
 
         public Reservations()

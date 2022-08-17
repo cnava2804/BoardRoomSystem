@@ -30,8 +30,8 @@ namespace BoardRoomSystem.Controllers
 
         public IActionResult Index()
         {
-            //ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
-            //ViewData["Reservations"] = JSONListHelper.GetEventListJSONString(_idal.GetReservations());
+            ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
+            ViewData["Reservations"] = JSONListHelper.GetReservationListJSONString(_idal.GetReservations());
 
             return View();
         }
@@ -39,9 +39,9 @@ namespace BoardRoomSystem.Controllers
         [Authorize]
         public IActionResult MyCalendar()
         {
-            //var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
-            //ViewData["Reservations"] = JSONListHelper.GetEventListJSONString(_idal.GetMyReservations(userid));
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
+            ViewData["Reservations"] = JSONListHelper.GetReservationListJSONString(_idal.GetMyReservations(userid));
             return View();
         }
 

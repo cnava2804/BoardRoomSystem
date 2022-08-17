@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220816070112_ReservationMVC")]
+    partial class ReservationMVC
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,6 +107,21 @@ namespace BoardRoomSystem.Migrations
                     b.ToTable("AreasViewModels");
                 });
 
+            modelBuilder.Entity("BoardRoomSystem.Models.Buildings", b =>
+                {
+                    b.Property<int>("Building_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Building_Name")
+                        .HasColumnType("nvarchar(70)");
+
+                    b.HasKey("Building_Id");
+
+                    b.ToTable("Buildings");
+                });
+
             modelBuilder.Entity("BoardRoomSystem.Models.Location", b =>
                 {
                     b.Property<int>("Location_Id")
@@ -127,14 +144,17 @@ namespace BoardRoomSystem.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Location_Id")
+                    b.Property<int?>("BuildingsBuilding_Id")
                         .HasColumnType("int");
 
                     b.Property<string>("MTGR_Description")
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<string>("MTGR_Image")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<byte[]>("MTGR_Image")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("MTGR_Location")
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("MTGR_MaxNumbPeople")
                         .HasColumnType("int");
@@ -147,14 +167,14 @@ namespace BoardRoomSystem.Migrations
                     b.Property<int>("MTGR_NumbRoom")
                         .HasColumnType("int");
 
-                    b.Property<int>("State_Id")
+                    b.Property<int?>("StatesState_Id")
                         .HasColumnType("int");
 
                     b.HasKey("MTGR_Id");
 
-                    b.HasIndex("Location_Id");
+                    b.HasIndex("BuildingsBuilding_Id");
 
-                    b.HasIndex("State_Id");
+                    b.HasIndex("StatesState_Id");
 
                     b.ToTable("MeetingRooms");
                 });
@@ -220,6 +240,7 @@ namespace BoardRoomSystem.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("state_Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(30)");
 
                     b.HasKey("State_Id");
@@ -364,17 +385,13 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("BoardRoomSystem.Models.MeetingRooms", b =>
                 {
-                    b.HasOne("BoardRoomSystem.Models.Location", "Location")
+                    b.HasOne("BoardRoomSystem.Models.Buildings", "Buildings")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("Location_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BuildingsBuilding_Id");
 
                     b.HasOne("BoardRoomSystem.Models.States", "States")
                         .WithMany("MeetingRooms")
-                        .HasForeignKey("State_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StatesState_Id");
                 });
 
             modelBuilder.Entity("BoardRoomSystem.Models.Reservations", b =>

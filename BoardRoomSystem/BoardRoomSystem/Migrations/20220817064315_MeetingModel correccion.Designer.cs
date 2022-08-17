@@ -4,14 +4,16 @@ using BoardRoomSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BoardRoomSystem.Migrations
 {
     [DbContext(typeof(BoardRoomSystemDBContext))]
-    partial class BoardRoomSystemDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220817064315_MeetingModel correccion")]
+    partial class MeetingModelcorreccion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,6 +107,21 @@ namespace BoardRoomSystem.Migrations
                     b.ToTable("AreasViewModels");
                 });
 
+            modelBuilder.Entity("BoardRoomSystem.Models.Buildings", b =>
+                {
+                    b.Property<int>("Building_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Building_Name")
+                        .HasColumnType("nvarchar(70)");
+
+                    b.HasKey("Building_Id");
+
+                    b.ToTable("Buildings");
+                });
+
             modelBuilder.Entity("BoardRoomSystem.Models.Location", b =>
                 {
                     b.Property<int>("Location_Id")
@@ -126,6 +143,9 @@ namespace BoardRoomSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BuildingsBuilding_Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("Location_Id")
                         .HasColumnType("int");
@@ -151,6 +171,8 @@ namespace BoardRoomSystem.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("MTGR_Id");
+
+                    b.HasIndex("BuildingsBuilding_Id");
 
                     b.HasIndex("Location_Id");
 
@@ -364,6 +386,10 @@ namespace BoardRoomSystem.Migrations
 
             modelBuilder.Entity("BoardRoomSystem.Models.MeetingRooms", b =>
                 {
+                    b.HasOne("BoardRoomSystem.Models.Buildings", null)
+                        .WithMany("MeetingRooms")
+                        .HasForeignKey("BuildingsBuilding_Id");
+
                     b.HasOne("BoardRoomSystem.Models.Location", "Location")
                         .WithMany("MeetingRooms")
                         .HasForeignKey("Location_Id")
