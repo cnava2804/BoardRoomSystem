@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoardRoomSystem.Models
 {
-    public class MeetingRooms
+    public class MeetingRooms 
     {
         [Key]
         public int MTGR_Id { get; set; }
@@ -24,9 +24,10 @@ namespace BoardRoomSystem.Models
         public string MTGR_Description { get; set; }
         [Display(Name = "Capacidad máxima de personas")]
         public int MTGR_MaxNumbPeople { get; set; }
-       
+
         [Display(Name = "Imagen")]
         public string MTGR_Image { get; set; }
+       
 
         [Display(Name ="Número de Sala")]
         public int MTGR_NumbRoom { get; set; }
@@ -44,19 +45,8 @@ namespace BoardRoomSystem.Models
         [ForeignKey("Location_Id")]
         public virtual Location Location { get; set; }
 
-        //public virtual States States { get; set; }
-        //public virtual Buildings Buildings { get; set; }
-
-        //public MeetingRooms(IFormCollection form, States states, Buildings buildings)
-        //{
-        //    MTGR_Name = form["Reservations.Reservation_Subject"].ToString();
-        //    Reservation_Recipient = form["Reservations.Reservation_Recipient"].ToString();
-        //    Reservation_StartDate = DateTime.Parse(form["Reservations.Reservation_StartDate"].ToString());
-        //    Reservation_EndtDate = DateTime.Parse(form["Reservations.Reservation_EndtDate"].ToString());
-        //    Reservation_NumbPeople = Convert.ToInt32(form["Reservations.Reservation_NumbPeople"].ToString());
-        //    Reservation_Description = form["Reservations.Reservation_Description"].ToString();
-        //    Reservation_Delegate = form["Reservations.Reservation_Delegate"].ToString();
-        //    Location = location;
-        //}
+        [NotMapped]
+        [Display(Name = "Image Cover")]
+        public IFormFile CoverPhoto { get; set; }
     }
 }
