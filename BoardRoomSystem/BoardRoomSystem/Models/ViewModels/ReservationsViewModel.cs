@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BoardRoomSystem.Models;
+using BoardRoomSystem.Data;
 
 namespace BoardRoomSystem.Models.ViewModels
 {
@@ -13,6 +14,7 @@ namespace BoardRoomSystem.Models.ViewModels
         public List<SelectListItem> Location = new List<SelectListItem>();
         public List<SelectListItem> AreasViewModel = new List<SelectListItem>();
         public List<SelectListItem> MeetingRooms = new List<SelectListItem>();
+        public List<SelectListItem> items = new List<SelectListItem>();
         public string LocationName { get; set; }
         public string AreasVMName { get; set; }
         public string MeetingRName { get; set; }
@@ -44,6 +46,7 @@ namespace BoardRoomSystem.Models.ViewModels
 
         public ReservationsViewModel(List<Location> locations, List<AreasViewModel> areasViewModels, List<MeetingRooms> meetingRooms)
         {
+
             //UserId = userid;
             foreach (var loc in locations)
             {

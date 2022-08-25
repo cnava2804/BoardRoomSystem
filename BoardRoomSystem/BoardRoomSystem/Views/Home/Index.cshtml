@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BoardRoomSystem.Models.ViewModels.ReservationsViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -17,11 +18,95 @@
     }
 </style>
 
+<!-- Modal -->
+<div class="modal fade" id="reservationsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Reservar Sala</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body">
+
+                <form asp-action="Index" id="create-reservation">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Reservations.Reservation_Subject" class="control-label"></label>
+                        <input asp-for="Reservations.Reservation_Subject" class="form-control" />
+                        <span asp-validation-for="Reservations.Reservation_Subject" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        @*@Html.DropDownList("Location", Model.Location, "Seleccionar la ubicación" , new { @class = "form-control", id = "Location" })*@
+                        @*@Html.DropDownList("Location", ViewBag.Location as SelectList,htmlAttributes: new { @class = "form-control" })*@
+                    </div>
+                    <div class="form-group">
+                        <label>Salas</label>
+                        @* @Html.DropDownList("MeetingRooms", Model.MeetingRooms, "Seleccionar Sala" , new { @class="form-control" })*@
+                        @* @Html.DropDownList("MeetingRooms", ViewBag.MeetingRooms as SelectList,htmlAttributes: new { @class = "form-control" })*@
+                    </div>
+                    <div class="form-group">
+                        <label>Área quién la reserva</label>
+                        @*@Html.DropDownList("AreasViewModel", Model.AreasViewModel, "Seleccionar Área", new { @class="form-control" })*@
+                    </div>
+
+                    <div class="form-floating">
+                        <label for="start" class="form-label">Fecha Inicio</label>
+                        <input type="datetime" class="form-control" id="start" />
+                    </div>
+                    <div class="form-group">
+                        <label for="start" class="control-label">Fecha Final</label>
+                        <input type="datetime" class="form-control" id="end" />
+                    </div>
+
+
+                    <div class="form-group">
+                        <label asp-for="Reservations.Reservation_Recipient" class="control-label"></label>
+                        <input asp-for="Reservations.Reservation_Recipient" class="form-control" />
+                        <span asp-validation-for="Reservations.Reservation_Recipient" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Reservations.Reservation_NumbPeople" class="control-label"></label>
+                        <input asp-for="Reservations.Reservation_NumbPeople" class="form-control" />
+                        <span asp-validation-for="Reservations.Reservation_NumbPeople" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Reservations.Reservation_Description" class="control-label"></label>
+                        <input asp-for="Reservations.Reservation_Description" class="form-control" />
+                        <span asp-validation-for="Reservations.Reservation_Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Reservations.Reservation_Delegate" class="control-label"></label>
+                        <input asp-for="Reservations.Reservation_Delegate" class="form-control" />
+                        <span asp-validation-for="Reservations.Reservation_Delegate" class="text-danger"></span>
+                    </div>
+                    <br />
+
+                    @*<div class="form-group">
+                    <input type="submit" value="Guardar" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-warning">Regresar</a>
+                    </div>*@
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <input type="submit" value="Guardar" class="btn btn-primary" />
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            locale: 'es',
             customButtons: {
                 myCustomButton: {
                     text: 'Filtros',
@@ -30,10 +115,10 @@
                     }
                 }
             },
-            dateClick: function(info) {
-                alert('Date: ' + info.dateStr);
-                alert('Resource ID: ' + info.resource.id);
-            },
+            //dateClick: function(info) {
+            //    alert('Date: ' + info.dateStr);
+            //    alert('Resource ID: ' + info.resource.id);
+            //},
 
             initialView: 'dayGridMonth',
             events: @Html.Raw(ViewData["Reservations"]),
@@ -50,7 +135,37 @@
                     trigger: 'hover',
                     container: 'body'
                 });
+            },
+            selectable: true,
+            selectHelper: true,
+            selectMirror: true,
+
+            
+            dateClick: function(selectInfo) {
+                info.dateStr
+                
+            },
+            select: function(info) {
+                document.getElementById('start').value = info.start;
+                if (document.getElementById('end') != null) {
+                           document.getElementById('end').value = info.end;
+                }
+                $('#reservationsModal').modal('toggle');
             }
+            //select: function(arg) {
+            //    var title = prompt('Nombre del Evento: ');
+            //    if (title) {
+            //        calendar.addEvent({
+            //            title: title
+            //        })
+            //    }
+            //    calendar.unselect()
+            //},
+            //eventClick: function(arg) {
+            //    if (confirm('Estas seguro de eliminar este evento?')) {
+            //        arg.remove()
+            //    }
+            //},
         });
         calendar.render();
     });

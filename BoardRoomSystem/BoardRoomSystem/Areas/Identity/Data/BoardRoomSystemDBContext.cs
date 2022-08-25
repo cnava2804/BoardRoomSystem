@@ -29,6 +29,7 @@ namespace BoardRoomSystem.Data
         public DbSet<AreasViewModel> AreasViewModels { get; set; }
         public DbSet<ApplicationUser> AplicationUsers { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<HomeCalendar> HomeCalendars { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

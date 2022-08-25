@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using BoardRoomSystem.Areas.Identity.Data;
 using BoardRoomSystem.Models.ViewModels;
 using BoardRoomSystem.Controllers.ActionFilters;
+using System.Web.Helpers;
 
 namespace BoardRoomSystem.Controllers
 {
@@ -26,11 +27,8 @@ namespace BoardRoomSystem.Controllers
         private BoardRoomSystemDBContext db = new BoardRoomSystemDBContext();
         private readonly IDAL _dal;
         private readonly UserManager<ApplicationUser> _usermanager;
+        private List<SelectListItem> _locItems = new List<SelectListItem>();
 
-        //public ReservationsController(IDAL dal)
-        //{
-        //    _dal = dal;
-        //}
 
         public ReservationsController(IDAL dal, UserManager<ApplicationUser> usermanager)
         {
@@ -40,11 +38,12 @@ namespace BoardRoomSystem.Controllers
 
         public IActionResult Index()
         {
+
             if (TempData["Alert"] != null)
             {
                 ViewData["Alert"] = TempData["Alert"];
             }
-            return View (_dal.GetReservations());
+            return View(_dal.GetReservations());
 
             //var applicationDbContext = dBContext.Reservations.Include(d => d.Reservation_Id);
             //return View(await dBContext.Reservations.ToListAsync());
@@ -73,6 +72,37 @@ namespace BoardRoomSystem.Controllers
 
         public IActionResult Create()
         {
+            //List<SelectListItem> lst = new List<SelectListItem>();
+
+            //using (Data.BoardRoomSystemDBContext dB = new BoardRoomSystemDBContext())
+            //{
+            //    lst = (from d in dB.Locations
+            //           select new SelectListItem
+            //           {
+            //               Value = d.Location_Id.ToString(),
+            //               Text = d.Location_Name
+            //           }).ToList();
+            //}
+
+            db = new BoardRoomSystemDBContext();
+            ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
+
+            //using (db = new BoardRoomSystemDBContext())
+            //{
+            //    //// CARGAMOS EL DropDownList DE REGIONES
+            //    //var loc = db.Locations.ToList();
+            //    //_locItems = new List<SelectListItem>();
+            //    //foreach (var item in loc)
+            //    //{
+            //    //    _locItems.Add(new SelectListItem
+            //    //    {
+            //    //        Text = item.Location_Name,
+            //    //        Value = item.Location_Id.ToString()
+            //    //    });
+            //    //}
+            //    //ViewBag.locItems = _locItems;
+            //}
+
             return View(new ReservationsViewModel(_dal.GetLocations(), _dal.GetAreasViewModel(), _dal.GetMeetingRooms()));
         }
 
@@ -82,17 +112,7 @@ namespace BoardRoomSystem.Controllers
         {
             try
             {
-                //var model = new Reservations();
-                //var modeloExistente = db.Reservations.FirstOrDefault(m => m.Reservation_StartDate == model.Reservation_StartDate && m.Reservation_EndtDate == model.Reservation_EndtDate.Date);
-
-                //if (modeloExistente == null)
-                //{
-                   
-                //}
-                //else
-                //{
-                //    ViewBag.sms = "mostrar un mensaje diciendo que el registro ya existe.";
-                //}
+              
 
                 _dal.CreateReservations(form);
                 TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
@@ -103,7 +123,7 @@ namespace BoardRoomSystem.Controllers
             catch (Exception ex)
             {
 
-                ViewData["Alert"] = "Ha ocurrido un error" +  ex.Message;
+                ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
                 return View(reservations);
             }
 
@@ -172,8 +192,67 @@ namespace BoardRoomSystem.Controllers
         public IActionResult Delete(int id)
         {
             _dal.DeleteReservations((int)id);
-            TempData["Alert"] = "Has Eliminado una reservación." ;
+            TempData["Alert"] = "Has Eliminado una reservación.";
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public JsonResult FilterLoc(int Id)
+        {
+            List<ElementJsonIntKey> lst = new List<ElementJsonIntKey>();
+            using (BoardRoomSystemDBContext db = new BoardRoomSystemDBContext()) 
+            {
+                lst = (from d in db.MeetingRooms
+                       where d.Location_Id == Id
+                       select new ElementJsonIntKey
+                       {
+                           Value = d.MTGR_Id,
+                           Text = d.MTGR_Name
+                       }
+                      ).ToList();
+            }
+
+            //var meetingRooms = db.MeetingRooms.ToList().Where(p => p.Location_Id == Id);
+            return new JsonResult(lst);
+        }
+
+        public class ElementJsonIntKey 
+        {
+            public int Value { get; set; }
+            public string Text { get; set; }
+        }
+
+        //public JsonResult GetLocationList(int LocationId)
+        //{
+        //    using (db = new BoardRoomSystemDBContext())
+        //    {
+        //        var meetingR = db.MeetingRooms.Where(x => x.Location_Id == LocationId).ToList();
+        //        return new JsonResult(meetingR);
+        //    }
+        //}
+
+        public List<Location> GetLocationList()
+        {
+
+            db = new BoardRoomSystemDBContext();
+
+            List<Location> locations = db.Locations.ToList();
+
+            return locations;
+
+
+        }
+
+        public ActionResult GetMeetingRoomsList(int locId)
+        {
+
+            using (db = new BoardRoomSystemDBContext())
+            {
+                List<MeetingRooms> mrList = db.MeetingRooms.Where(x => x.Location_Id == locId).ToList();
+                ViewBag.ProductOPtions = new SelectList(mrList, "MTGR_Id", "MTGR_Name");
+                return PartialView("DisplayProduct");
+            }
+
         }
 
     }

@@ -17,5 +17,10 @@ namespace BoardRoomSystem.Models
         public virtual ICollection<MeetingRooms> MeetingRooms { get; set; }
         //Relational data
         public virtual ICollection<Reservations> Reservations { get; set; }
+
+        public Location()
+        {
+            MeetingRooms = new HashSet<MeetingRooms>();
+        }
     }
 }
