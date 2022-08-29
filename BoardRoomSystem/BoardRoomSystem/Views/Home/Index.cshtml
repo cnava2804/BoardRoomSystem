@@ -18,88 +18,140 @@
     }
 </style>
 
-<!-- Modal -->
-<div class="modal fade" id="reservationsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Reservar Sala</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">X</button>
-            </div>
-            <div class="modal-body">
 
-                <form asp-action="Index" id="create-reservation">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@using (Html.BeginForm("Index", "Home", FormMethod.Post))
+{
 
-                    <div class="form-group">
-                        <label asp-for="Reservations.Reservation_Subject" class="control-label"></label>
-                        <input asp-for="Reservations.Reservation_Subject" class="form-control" />
-                        <span asp-validation-for="Reservations.Reservation_Subject" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        @*@Html.DropDownList("Location", Model.Location, "Seleccionar la ubicación" , new { @class = "form-control", id = "Location" })*@
-                        @*@Html.DropDownList("Location", ViewBag.Location as SelectList,htmlAttributes: new { @class = "form-control" })*@
-                    </div>
-                    <div class="form-group">
-                        <label>Salas</label>
-                        @* @Html.DropDownList("MeetingRooms", Model.MeetingRooms, "Seleccionar Sala" , new { @class="form-control" })*@
-                        @* @Html.DropDownList("MeetingRooms", ViewBag.MeetingRooms as SelectList,htmlAttributes: new { @class = "form-control" })*@
-                    </div>
-                    <div class="form-group">
-                        <label>Área quién la reserva</label>
-                        @*@Html.DropDownList("AreasViewModel", Model.AreasViewModel, "Seleccionar Área", new { @class="form-control" })*@
-                    </div>
+   @*<!-- Modal -->*@
+    <div class="modal fade" id="reservationsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Reservar Sala</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
 
-                    <div class="form-floating">
-                        <label for="start" class="form-label">Fecha Inicio</label>
-                        <input type="datetime" class="form-control" id="start" />
-                    </div>
-                    <div class="form-group">
-                        <label for="start" class="control-label">Fecha Final</label>
-                        <input type="datetime" class="form-control" id="end" />
-                    </div>
+                    <form id="create-reservation">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group">
+                            <label class="control-label">Asunto</label>
+                            <input asp-for="Reservations.Reservation_Subject" id="txtSubject" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                             @*@{
+                                SelectList item8 = ViewBag.Location;
+                              }*@
+                            <div class="form-group">
+                                <label>Ubicaciones</label>
+                                <div class="col-md-14">
+                                   @*@Html.DropDownListFor(model => model.Reservations.Location,ViewBag.Location as SelectList, "-- Seleccionar Sala--", new { @class = "form-control" })*@
+                                   @Html.DropDownList("Location", Model.Location, "Seleccionar Ubicación" , new { @class = "form-control", id = "Location" })
+                                   @* @Html.ValidationMessageFor(model => model.Reservations.Location.Location_Id, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                            <label>Ubicaciones</label>
+                            <select asp-for="Reservations.Location.Location_Id" class="form-control" asp-items="ViewBag.Location_Id"></select>
+                        </div>*@
+
+         
+                        <div class="form-group">
+                            @*@{
+                                SelectList dataItems2 = ViewBag.MeetingRooms;
+                            }*@
+                            <div class="form-group">
+                                <label>Salas</label>
+                                <div class="col-md-14">
+                                    @Html.DropDownList("MeetingRooms", Model.MeetingRooms, "Seleccionar Sala" , new { @class = "form-control", id = "MeetingRooms" })
+                                    @*@Html.DropDownListFor(model => model.MeetingRooms, dataItems2, "-- Seleccionar Sala--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Reservations.MeetingRooms.MTGR_Id, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @*@{
+                                SelectList dataItems3 = ViewBag.AreasViewModel;
+                            }*@
+                            <div class="form-group">
+                                <label>Área de quién reserva la sala</label>
+                                <div class="col-md-14">
+                                    @Html.DropDownList("AreasViewModel", Model.AreasViewModel, "Seleccionar Área" , new { @class = "form-control", id = "AreasViewModel" })
+                                   @* @Html.DropDownListFor(model => model.AreasViewModel, dataItems3, "-- Seleccionar Área--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Reservations.AreasViewModel.Area_Id, "", new { @class = "text-danger" })*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating">
+                            <label for="start" class="form-label">Fecha Inicio</label>
+                            <input asp-for="Reservations.Reservation_StartDate" class="form-control" id="txtStart" />
+                        </div>
+                        <div class="form-group">
+                            <label for="end" class="control-label">Fecha Final</label>
+                            <input asp-for="Reservations.Reservation_EndtDate" class="form-control" id="txtEnd" />
+                        </div>
 
 
-                    <div class="form-group">
-                        <label asp-for="Reservations.Reservation_Recipient" class="control-label"></label>
-                        <input asp-for="Reservations.Reservation_Recipient" class="form-control" />
-                        <span asp-validation-for="Reservations.Reservation_Recipient" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Reservations.Reservation_NumbPeople" class="control-label"></label>
-                        <input asp-for="Reservations.Reservation_NumbPeople" class="form-control" />
-                        <span asp-validation-for="Reservations.Reservation_NumbPeople" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Reservations.Reservation_Description" class="control-label"></label>
-                        <input asp-for="Reservations.Reservation_Description" class="form-control" />
-                        <span asp-validation-for="Reservations.Reservation_Description" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Reservations.Reservation_Delegate" class="control-label"></label>
-                        <input asp-for="Reservations.Reservation_Delegate" class="form-control" />
-                        <span asp-validation-for="Reservations.Reservation_Delegate" class="text-danger"></span>
-                    </div>
-                    <br />
+                        <div class="form-group">
+                            <label class="control-label">Destinatario</label>
+                            <input asp-for="Reservations.Reservation_Recipient" id="txtRecipient" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Número de personas</label>
+                            <input asp-for="Reservations.Reservation_NumbPeople" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Reservations.Reservation_Description" class="control-label"></label>
+                            <input asp-for="Reservations.Reservation_Description" class="form-control" />
+                            <span asp-validation-for="Reservations.Reservation_Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Reservations.Reservation_Delegate" class="control-label"></label>
+                            <input asp-for="Reservations.Reservation_Delegate" class="form-control" />
+                            <span asp-validation-for="Reservations.Reservation_Delegate" class="text-danger"></span>
+                        </div>
+                        <br />
 
-                    @*<div class="form-group">
-                    <input type="submit" value="Guardar" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-warning">Regresar</a>
-                    </div>*@
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        @*<div class="form-group">
                         <input type="submit" value="Guardar" class="btn btn-primary" />
-                    </div>
-                </form>
+                        <a asp-action="Index" class="btn btn-warning">Regresar</a>
+                        </div>*@
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                           @* <input type="submit" id="btnSave" value="Guardar" class="btn btn-primary" />*@
+                            @*<div class="form-group">
+                                <button type="button" class="btn btn-primary" data-ajax-method="get" data-toggle="ajax-modal" data-target="#ValidateAddress"
+                                            data-url="@Url.Action("SaveReservation", new { model = Model })">Guardar</button>
+                                
+                            </div>*@
+                        </div>
+
+
+
+                    </form>
+
+                </div>
 
             </div>
-
         </div>
     </div>
-</div>
+}
 
+@*@if (Model != null)
+    {
+        <script type="text/javascript">
+            $(function () {
+                alert("Inserted Customer ID: " + @Model.Reservations.Reservation_Id);
+            });
+        </script>
+    }*@
 
 <script>
 
@@ -107,6 +159,7 @@
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
+            timeZone: 'local',
             customButtons: {
                 myCustomButton: {
                     text: 'Filtros',
@@ -115,10 +168,6 @@
                     }
                 }
             },
-            //dateClick: function(info) {
-            //    alert('Date: ' + info.dateStr);
-            //    alert('Resource ID: ' + info.resource.id);
-            //},
 
             initialView: 'dayGridMonth',
             events: @Html.Raw(ViewData["Reservations"]),
@@ -140,18 +189,23 @@
             selectHelper: true,
             selectMirror: true,
 
-            
+
             dateClick: function(selectInfo) {
-                info.dateStr
-                
+                info.date
+                console.log(info.date);
             },
             select: function(info) {
-                document.getElementById('start').value = info.start;
-                if (document.getElementById('end') != null) {
-                           document.getElementById('end').value = info.end;
+                document.getElementById('txtStart').value = info.startStr;
+                if (document.getElementById('txtEnd') != null) {
+                           document.getElementById('txtEnd').value = info.endStr;
                 }
                 $('#reservationsModal').modal('toggle');
+
+                console.log(info.startStr);
+                console.log(info.endStr);
             }
+
+
             //select: function(arg) {
             //    var title = prompt('Nombre del Evento: ');
             //    if (title) {
@@ -169,6 +223,21 @@
         });
         calendar.render();
     });
+
+    //$('button[data-toggle="ajax-modal"]').click(function(event) {
+    //    event.preventDefault();
+    //    var url = $(this).data('Home/SaveReservation');
+    //    // get the form containing the submit button
+    //    var form = $(this).closest('form')
+    //    var $j = jQuery.noConflict();
+    //    // serialize all the fields in the form
+    //    var model = form.serialize();
+    //    // the the request to the url along with the form (model) data
+    //    $j.get(url, model).done(function(data) {
+    //        PlaceHolderElement.html(data);
+    //        PlaceHolderElement.find('reservationsModal').modal('show');
+    //    })
+    //})
 
 </script>
 

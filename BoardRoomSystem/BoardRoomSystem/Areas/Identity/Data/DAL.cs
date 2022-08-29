@@ -57,7 +57,7 @@ namespace BoardRoomSystem.Areas.Identity.Data
             var user = db.Users.FirstOrDefault(x => x.Id == form["UserId"].ToString());
 
             var newreservation = new Reservations(form, db.Locations.FirstOrDefault(x => x.Location_Name == locname), user, 
-                db.AreasViewModels.FirstOrDefault(a => a.Area_Name == areaVM), db.MeetingRooms.FirstOrDefault(m => m.MTGR_Name == meetR));
+            db.AreasViewModels.FirstOrDefault(a => a.Area_Name == areaVM), db.MeetingRooms.FirstOrDefault(m => m.MTGR_Name == meetR));
             db.Reservations.Add(newreservation);
             db.SaveChanges();
         }

@@ -44,9 +44,6 @@ namespace BoardRoomSystem.Controllers
                 ViewData["Alert"] = TempData["Alert"];
             }
             return View(_dal.GetReservations());
-
-            //var applicationDbContext = dBContext.Reservations.Include(d => d.Reservation_Id);
-            //return View(await dBContext.Reservations.ToListAsync());
         }
 
         public IActionResult Details(int? id)
@@ -72,36 +69,10 @@ namespace BoardRoomSystem.Controllers
 
         public IActionResult Create()
         {
-            //List<SelectListItem> lst = new List<SelectListItem>();
-
-            //using (Data.BoardRoomSystemDBContext dB = new BoardRoomSystemDBContext())
-            //{
-            //    lst = (from d in dB.Locations
-            //           select new SelectListItem
-            //           {
-            //               Value = d.Location_Id.ToString(),
-            //               Text = d.Location_Name
-            //           }).ToList();
-            //}
 
             db = new BoardRoomSystemDBContext();
             ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
 
-            //using (db = new BoardRoomSystemDBContext())
-            //{
-            //    //// CARGAMOS EL DropDownList DE REGIONES
-            //    //var loc = db.Locations.ToList();
-            //    //_locItems = new List<SelectListItem>();
-            //    //foreach (var item in loc)
-            //    //{
-            //    //    _locItems.Add(new SelectListItem
-            //    //    {
-            //    //        Text = item.Location_Name,
-            //    //        Value = item.Location_Id.ToString()
-            //    //    });
-            //    //}
-            //    //ViewBag.locItems = _locItems;
-            //}
 
             return View(new ReservationsViewModel(_dal.GetLocations(), _dal.GetAreasViewModel(), _dal.GetMeetingRooms()));
         }
@@ -112,17 +83,12 @@ namespace BoardRoomSystem.Controllers
         {
             try
             {
-              
-
                 _dal.CreateReservations(form);
                 TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
                 return RedirectToAction("Index");
-
-
             }
             catch (Exception ex)
             {
-
                 ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
                 return View(reservations);
             }
