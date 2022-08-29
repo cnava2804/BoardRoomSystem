@@ -90,10 +90,12 @@
                         <div class="form-floating">
                             <label for="start" class="form-label">Fecha Inicio</label>
                             <input asp-for="Reservations.Reservation_StartDate" class="form-control" id="txtStart" />
+                             @Html.ValidationMessageFor(m => m.Reservations.Reservation_StartDate)
                         </div>
                         <div class="form-group">
                             <label for="end" class="control-label">Fecha Final</label>
                             <input asp-for="Reservations.Reservation_EndtDate" class="form-control" id="txtEnd" />
+                            @Html.ValidationMessageFor(m => m.Reservations.Reservation_EndtDate)
                         </div>
 
 
@@ -144,18 +146,11 @@
     </div>
 }
 
-@*@if (Model != null)
-    {
-        <script type="text/javascript">
-            $(function () {
-                alert("Inserted Customer ID: " + @Model.Reservations.Reservation_Id);
-            });
-        </script>
-    }*@
 
 <script>
 
     document.addEventListener('DOMContentLoaded', function() {
+
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
@@ -195,6 +190,11 @@
                 console.log(info.date);
             },
             select: function(info) {
+                if (document.getElementById('txtStart') > document.getElementById('txtEnd')) {
+                    alert('Fecha Invalida');
+                    return;
+                }
+                else { 
                 document.getElementById('txtStart').value = info.startStr;
                 if (document.getElementById('txtEnd') != null) {
                            document.getElementById('txtEnd').value = info.endStr;
@@ -203,7 +203,11 @@
 
                 console.log(info.startStr);
                 console.log(info.endStr);
+                }
+
+
             }
+
 
 
             //select: function(arg) {
@@ -223,21 +227,6 @@
         });
         calendar.render();
     });
-
-    //$('button[data-toggle="ajax-modal"]').click(function(event) {
-    //    event.preventDefault();
-    //    var url = $(this).data('Home/SaveReservation');
-    //    // get the form containing the submit button
-    //    var form = $(this).closest('form')
-    //    var $j = jQuery.noConflict();
-    //    // serialize all the fields in the form
-    //    var model = form.serialize();
-    //    // the the request to the url along with the form (model) data
-    //    $j.get(url, model).done(function(data) {
-    //        PlaceHolderElement.html(data);
-    //        PlaceHolderElement.find('reservationsModal').modal('show');
-    //    })
-    //})
 
 </script>
 

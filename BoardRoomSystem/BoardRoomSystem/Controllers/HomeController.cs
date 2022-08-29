@@ -51,25 +51,19 @@ namespace BoardRoomSystem.Controllers
         [HttpPost]
         public ActionResult Index(IFormCollection form, [Bind("Reservation_Id,Reservation_Subject,Reservation_Recipient,Reservation_StartDate,Reservation_EndtDate,Reservation_NumbPeople,Reservation_Description,Reservation_Delegate,Location_Id,MTGR_Id,Area_Id")] BoardRoomSystem.Models.Reservations reservations)
         {
-            //using (BoardRoomSystemDBContext entities = new BoardRoomSystemDBContext())
-            //{
-            //    _idal.CreateReservations(form);
-            //    //entities.Reservations.Add(reservations);
-            //    //entities.SaveChanges();
-            //    int id = reservations.Reservation_Id;
-            //}
-
-            //ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
-            //ViewBag.MeetingRooms = new SelectList(GetMeetingRList(), "MTGR_Id", "MTGR_Name");
-            //ViewBag.AreasViewModel = new SelectList(GetAreasList(), "Area_Id", "Area_Name");
-            //return View();
-
-
-
             try
             {
-                _idal.CreateReservations(form);
-                TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
+                if (ModelState.IsValid)
+                {
+                    _idal.CreateReservations(form);
+                    TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
+
+                }
+                else
+                {
+                    TempData["Alert"] = "Ha ocurrido un error";
+
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -77,20 +71,6 @@ namespace BoardRoomSystem.Controllers
                 ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
                 return View(reservations);
             }
-
-
-
-            //if (ModelState.IsValid)
-            //{
-            //    db.Add(reservations);
-            //    db.SaveChanges();
-            ////////}
-
-            //ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
-            //ViewBag.MeetingRooms = new SelectList(GetMeetingRList(), "MTGR_Id", "MTGR_Name");
-            //ViewBag.AreasViewModel = new SelectList(GetAreasList(), "Area_Id", "Area_Name");
-
-            //return View(nameof(Index));
 
         }
 

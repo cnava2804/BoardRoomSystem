@@ -81,10 +81,15 @@ namespace BoardRoomSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Reservations reservations, IFormCollection form)
         {
+
             try
             {
-                _dal.CreateReservations(form);
-                TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
+                if (ModelState.IsValid)
+                {
+                    _dal.CreateReservations(form);
+                    TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
+                    
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -92,6 +97,8 @@ namespace BoardRoomSystem.Controllers
                 ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
                 return View(reservations);
             }
+
+            
 
         }
 

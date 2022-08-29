@@ -3,10 +3,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using BoardRoomSystem.Areas.Identity.Data;
+using System.Collections.Generic;
 
 namespace BoardRoomSystem.Models
 {
-    public class Reservations
+    public class Reservations : IValidatableObject
     {
         [Key]
         public int Reservation_Id { get; set; }
@@ -18,8 +19,12 @@ namespace BoardRoomSystem.Models
         public string Reservation_Recipient { get; set; }
 
         [Display(Name = "Fecha de Inicio")]
+        [Required]
+        //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Reservation_StartDate { get; set; }
         [Display(Name = "Fecha Final")]
+        [Required]
+        //[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Reservation_EndtDate { get; set; }
         [Display(Name = "Número de Personas")]
         public int Reservation_NumbPeople { get; set; }
@@ -83,6 +88,21 @@ namespace BoardRoomSystem.Models
             Location = location;
             AreasViewModel = areasViewModel;
             MeetingRooms = meetingRooms;
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+           
+            var errores = new List<ValidationResult>();
+
+            if (Reservation_EndtDate < Reservation_StartDate)
+            {
+                errores.Add(new ValidationResult("La fecha de inicio debe ser menor a la fecha final ", 
+                    new string[] { "Reservation_EndtDate" }));
+            }
+
+            return errores;
+
         }
 
         public Reservations()
