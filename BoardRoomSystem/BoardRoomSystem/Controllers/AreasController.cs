@@ -1,4 +1,4 @@
-﻿using BoardRoomSystem.Data;
+﻿using BoardRoomSystem.Areas.Identity.Data;
 using BoardRoomSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize]
+    //[Authorize(Policy = "RequireAdmin")]
+    [Authorize(Roles = "Admin")]
     public class AreasController : Controller
     {
-        private readonly BoardRoomSystemDBContext dBContext;
+        private readonly ApplicationDbContext dBContext;
 
-        public AreasController(BoardRoomSystemDBContext dBContext)
+        public AreasController(ApplicationDbContext dBContext)
         {
             this.dBContext = dBContext;
         }

@@ -5,7 +5,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Areas</h1>
+<h2>Areas</h2>
+
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><label>Areas</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
+
 @if (ViewData["Alert"] != null)
 {
     <h3>@ViewData["Alert"]</h3>
@@ -33,7 +40,7 @@
                         @Html.DisplayFor(modelItem => item.Area_Name)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Area_Id">Details</a>
+                        <a asp-action="Details" asp-route-id="@item.Area_Id" class="btn btn-sm btn-primary">Details</a>
                     </td>
                 </tr>
             }

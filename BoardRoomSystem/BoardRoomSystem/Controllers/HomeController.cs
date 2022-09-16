@@ -1,86 +1,207 @@
 ﻿using BoardRoomSystem.Models;
-using Microsoft.AspNetCore.Authorization;
+using BoardRoomSystem.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using BoardRoomSystem.Helpers;
+using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using BoardRoomSystem.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using BoardRoomSystem.Areas.Identity.Data;
-using BoardRoomSystem.Data;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using BoardRoomSystem.Models.ViewModels;
-using Microsoft.AspNetCore.Http;
-using System.Collections;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin, User")]
     public class HomeController : Controller
     {
-        private BoardRoomSystemDBContext db = new BoardRoomSystemDBContext();
         private readonly ILogger<HomeController> _logger;
-        private readonly IDAL _idal;
-        private readonly UserManager<ApplicationUser> _usermanager;
+        private readonly ApplicationDbContext dc;
 
-        public HomeController(ILogger<HomeController> logger, IDAL idal, UserManager<ApplicationUser> usermanager)
+
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext dc)
         {
             _logger = logger;
-            _idal = idal;
-            _usermanager = usermanager;
+            this.dc = dc;
         }
-        [HttpGet]
-        public IActionResult Index()
+        
+        public ActionResult Index()
         {
-            //ViewBag["Location"] = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
+            return View();
+        }
 
-            ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
-            ViewBag.MeetingRooms = new SelectList(GetMeetingRList(), "MTGR_Id", "MTGR_Name");
-            ViewBag.AreasViewModel = new SelectList(GetAreasList(), "Area_Id", "Area_Name");
+        public JsonResult GetEvents()
+        {
+            var query = (from Event in dc.Events
+                         join MeetingRoom in dc.MeetingRooms on Event.MeetingRoom.IdMeetR equals MeetingRoom.IdMeetR
+                         select new
+                         {
+                             meetRId = MeetingRoom.IdMeetR,
+                             meetRName = MeetingRoom.NameMeetR
+                         }).ToList();
 
-            ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
-            ViewData["Reservations"] = JSONListHelper.GetReservationListJSONString(_idal.GetReservations());
+            var events = dc.Events.ToList();
+            return Json(events, new System.Text.Json.JsonSerializerOptions { });
 
-            return View(new ReservationsViewModel(_idal.GetLocations(), _idal.GetAreasViewModel(), _idal.GetMeetingRooms()));
+        }
+
+        public JsonResult GetRooms()
+        {
+
+            var query2 = (from A in dc.Events
+                          join B in dc.MeetingRooms on A.MeetingRoom.IdMeetR equals B.IdMeetR
+                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation}).ToList();
+
+           
+
+            return Json(query2, new System.Text.Json.JsonSerializerOptions { });
+        }
+
+
+    
+
+        [HttpPost]
+        public ActionResult SaveEvent(Event e)
+        {
+            //List<MeetingRoom> meetLst;
+            //meetLst = (from d in dc.MeetingRooms
+            //           select d).ToList();
+            var status = false;
+            List<Event> eventLst;
+            eventLst = (from d in dc.Events
+                        select d).ToList();
+
+            
+
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            if (claimsIdentity != null)
+            {
+                // the principal identity is a claims identity.
+                // now we need to find the NameIdentifier claim
+                var userIdClaim = claimsIdentity.Claims
+                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
+                {
+                    var userIdValue = userIdClaim.Value;
+
+                    foreach (var itemss in eventLst)
+                    {
+                        if (e.EventID > 0)
+                        {
+                            if (itemss.UserId == userIdValue)
+                            {
+                                //Update the event
+                                var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                                if (v != null)
+                                {
+                                    v.Subject = e.Subject;
+                                    v.Start = e.Start;
+                                    v.End = e.End;
+                                    v.Description = e.Description;
+                                    v.IsFullDay = e.IsFullDay;
+                                    v.ThemeColor = e.ThemeColor;
+                                    v.IdLocation = e.IdLocation;
+                                    v.IdMeetR = e.IdMeetR;
+                                    v.UserId = userIdValue;
+                                }
+                                
+                            }
+                            
+
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Error";
+                            status = true;
+                            return new JsonResult(e, new { status = status });
+
+                        }
+                        foreach (var item1 in eventLst)
+                        {
+                            if (e.Start == item1.Start)
+                            {
+                                if (e.End == item1.End)
+                                {
+                                    if (e.IdMeetR == item1.IdMeetR)
+                                    {
+                                        ViewBag.Alert = "Lo sentimos, esta solicitud ya existe.";
+                                        return View(e);
+                                    }
+                                    else
+                                    {
+                                        dc.Events.Add(e);
+                                    }
+
+                                }
+
+
+                            }
+
+                        }
+                        
+                        
+                    }
+                    
+
+                   
+                }
+
+            }
+
+
+            
+            dc.SaveChanges();
+
+            status = true;
+
+
+            return new JsonResult ( new { status = status } );
+        }
+
+        public JsonResult txtLocation()
+        {
+            var locs = dc.Locations.ToList();
+            return new JsonResult(locs);
+        }
+
+        public JsonResult txtRoom(int id)
+        {
+            var rooms = dc.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
+            return new JsonResult(rooms);
+        }
+
+        public JsonResult loc_selector()
+        {
+            var locs = dc.Locations.ToList();
+            return new JsonResult(locs);
+        }
+
+        public JsonResult room_selector(int id)
+        {
+            var rooms = dc.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
+            return new JsonResult(rooms);
         }
 
         [HttpPost]
-        public ActionResult Index(IFormCollection form, [Bind("Reservation_Id,Reservation_Subject,Reservation_Recipient,Reservation_StartDate,Reservation_EndtDate,Reservation_NumbPeople,Reservation_Description,Reservation_Delegate,Location_Id,MTGR_Id,Area_Id")] BoardRoomSystem.Models.Reservations reservations)
+        public JsonResult DeleteEvent(int eventID)
         {
-            try
+            var status = false;
+            var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
+            if (v != null)
             {
-                if (ModelState.IsValid)
-                {
-                    _idal.CreateReservations(form);
-                    TempData["Alert"] = "Exito! Has creado una nueva reservación para: " + reservations.Reservation_Subject;
-
-                }
-                else
-                {
-                    TempData["Alert"] = "Ha ocurrido un error";
-
-                }
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
-                return View(reservations);
+                dc.Events.Remove(v);
+                dc.SaveChanges();
+                status = true;
             }
 
-        }
-
-        [Authorize]
-        public IActionResult MyCalendar()
-        {
-            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            ViewData["Resources"] = JSONListHelper.GetResourceListJSONString(_idal.GetLocations());
-            ViewData["Reservations"] = JSONListHelper.GetReservationListJSONString(_idal.GetMyReservations(userid));
-            return View();
+            return new JsonResult ( new { status = status } );
         }
 
         public IActionResult Privacy()
@@ -91,137 +212,7 @@ namespace BoardRoomSystem.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new Models.ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        public ViewResult PageNotFound()
-        {
-            Response.StatusCode = 404;
-            return View();
-        }
-
-
-        public JsonResult GetEvents()
-        {
-            using (BoardRoomSystemDBContext dc = new BoardRoomSystemDBContext())
-            {
-                var events = dc.Reservations.ToList();
-                return new JsonResult(events, new Newtonsoft.Json.JsonSerializerSettings());
-            }
-        }
-
-        //[HttpPost]
-        //public JsonResult SaveEvent(BoardRoomSystem.Models.Reservations e)
-        //{
-        //    var status = false;
-        //    using (BoardRoomSystemDBContext dc = new BoardRoomSystemDBContext())
-        //    {
-        //        if (e.Reservation_Id > 0)
-        //        {
-        //            //Update the event
-        //            var v = dc.Reservations.Where(a => a.Reservation_Id == e.Reservation_Id).FirstOrDefault();
-        //            if (v != null)
-        //            {
-        //                v.Reservation_Subject = e.Reservation_Subject;
-        //                v.Reservation_StartDate = e.Reservation_StartDate;
-        //                v.Reservation_EndtDate = e.Reservation_EndtDate;
-        //                v.Reservation_Description = e.Reservation_Description;
-        //                //v.IsFullDay = e.IsFullDay;
-        //                //v.ThemeColor = e.ThemeColor;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            dc.Reservations.Add(e);
-        //        }
-
-        //        dc.SaveChanges();
-        //        status = true;
-
-        //    }
-        //    return new JsonResult(new { status = status });
-        //}
-
-        //[HttpPost]
-        //public JsonResult DeleteEvent(int reservationID)
-        //{
-        //    var status = false;
-        //    using (BoardRoomSystemDBContext dc = new BoardRoomSystemDBContext())
-        //    {
-        //        var v = dc.Reservations.Where(a => a.Reservation_Id == reservationID).FirstOrDefault();
-        //        if (v != null)
-        //        {
-        //            dc.Reservations.Remove(v);
-        //            dc.SaveChanges();
-        //            status = true;
-        //        }
-        //    }
-        //    return new JsonResult(new { status = status });
-
-        //}
-
-        //public IActionResult SaveReservation()
-        //{
-        //    db = new BoardRoomSystemDBContext();
-        //    ViewBag.Location = new SelectList(GetLocationList(), "Location_Id", "Location_Name");
-
-
-        //    return View(new ReservationsViewModel(_idal.GetLocations(), _idal.GetAreasViewModel(), _idal.GetMeetingRooms()));
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public IActionResult SaveReservation(Models.Reservations reservations, IFormCollection form)
-        //{
-        //    try
-        //    {
-        //        _idal.CreateReservations(form);
-        //        return RedirectToAction("Index");
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        ViewData["Alert"] = "Ha ocurrido un error" + ex.Message;
-        //        return View();
-        //    }
-
-        //}
-        public List<Location> GetLocationList()
-        {
-
-            db = new BoardRoomSystemDBContext();
-
-            List<Location> locations = db.Locations.ToList();
-
-            return locations;
-
-
-        }
-
-        public List<MeetingRooms> GetMeetingRList()
-        {
-
-            db = new BoardRoomSystemDBContext();
-
-            List<MeetingRooms> meetingRooms = db.MeetingRooms.ToList();
-
-            return meetingRooms;
-
-
-        }
-
-        public List<AreasViewModel> GetAreasList()
-        {
-
-            db = new BoardRoomSystemDBContext();
-
-            List<AreasViewModel> areasViewModels = db.AreasViewModels.ToList();
-
-            return areasViewModels;
-
-
-        }
-
     }
 }

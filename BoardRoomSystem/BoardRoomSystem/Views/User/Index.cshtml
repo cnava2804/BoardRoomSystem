@@ -1,0 +1,102 @@
+﻿@model ICollection<BoardRoomSystem.Areas.Identity.Data.ApplicationUser>
+@{
+    ViewData["Title"] = "Usuarios";
+
+}
+ <!--Datatables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.5/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap5.min.css">
+    <link href="assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+
+<!--Boton-->
+<a class=" btn btn-outline-dark boton-menu" asp-area="" asp-controller="Home" asp-action="Index"> <i class="fa-solid fa-chevron-left"></i> Menú</a>
+<!-- Buscar/Botones -->
+<h3 class="h3">Usuarios</h3>
+
+<div class="container ">
+
+    <div class="row">
+        <div class="col position-table">
+
+            @if (@Model != null && @Model.Any())
+            {
+
+                <table id="usuario_table" class="table table-hover tabla_" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nombre </th>
+                            <th scope="col">Apellido </th>
+                            <th scope="col">Email</th>
+                            <th scope="col">
+                                <form id="registerForm" asp-area="Identity" asp-page="/Account/Register">
+                                    <button id="register" type="submit" class="btn btn-success boton_nuevo_usuario">
+                                        <i class="fa-solid fa-circle-plus"></i>
+                                        Nuevo
+                                    </button>
+
+                                </form>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                           
+
+                            <tr>
+                                
+                                <td>@user.FirstNameUser</td>
+                                <td>@user.LastNameUser</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    <a asp-action="Edit" class="btn btn-outline-primary color_off" asp-controller="User" asp-route-id="@user.Id"><i class="fa-solid fa-pen"></i></a>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+</div>
+
+<div class="text-center">
+</div>
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+}
+<!-- jquery y bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+<!-- datatables con bootstrap -->
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Para usar los botones -->
+<script src="https://cdn.datatables.net/buttons/1.6.5/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.5/js/buttons.html5.min.js"></script>
+<script>
+
+          $(document).ready(function () {
+        $('#usuario_table').DataTable({
+            "language":{
+                "url": "https://cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json"
+            },
+             scrollY: '60vh',
+             scrollCollapse: true,
+             paging: true,
+        });
+    });
+
+
+</script>
+
+
+
+}

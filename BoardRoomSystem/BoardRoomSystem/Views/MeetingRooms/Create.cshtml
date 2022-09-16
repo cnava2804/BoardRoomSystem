@@ -1,41 +1,69 @@
-﻿@model BoardRoomSystem.Models.MeetingRooms
+﻿@model BoardRoomSystem.Models.ViewModel.ImageCreateModel
 
 @{
     ViewData["Title"] = "Crear Sala de Juntas";
 }
 
-<h2>Crear</h2>
+<h2>Crear Sala</h2>
+
+
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><a asp-action="Index">Salas</a></li>
+  <li><label>Nuevo</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 <hr />
+
+@*<script>
+    $(document).ready(function() {
+        GetLocation();
+    });
+    function GetLocation() {
+        $.ajax({
+            url: '/MeetingRooms/LocationJr',
+            success: function(result) {
+                $.each(result, function(i, data) {
+                    $('#Location').append('<Option value=' + data.id + '>' + data.name + '</Option>');
+                });
+            }
+        });
+    };
+</script>*@
 
 <div class="row">
     <div class="col-md-4">
-        <form method="POST" enctype="multipart/form-data" asp-action="Create" asp-controller="MeetingRooms">
+        <form method="post" asp-action="Create" enctype="multipart/form-data" asp-controller="MeetingRooms">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="MTGR_Name" class="control-label"></label>
-                <input asp-for="MTGR_Name" class="form-control" />
-                <span asp-validation-for="MTGR_Name" class="text-danger"></span>
+                <label asp-for="NameMeetR" class="control-label"></label>
+                <input asp-for="NameMeetR" class="form-control" />
+                <span asp-validation-for="NameMeetR" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MTGR_Description" class="control-label"></label>
-                <input asp-for="MTGR_Description" class="form-control" />
-                <span asp-validation-for="MTGR_Description" class="text-danger"></span>
+                <label asp-for="DescriptionMeetR" class="control-label"></label>
+                <input asp-for="DescriptionMeetR" class="form-control" />
+                <span asp-validation-for="DescriptionMeetR" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="MTGR_MaxNumbPeople" class="control-label"></label>
-                <input asp-for="MTGR_MaxNumbPeople" class="form-control" />
-                <span asp-validation-for="MTGR_MaxNumbPeople" class="text-danger"></span>
+                <label asp-for="MaxNumbPeopleMeetR" class="control-label"></label>
+                <input asp-for="MaxNumbPeopleMeetR" class="form-control" />
+                <span asp-validation-for="MaxNumbPeopleMeetR" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="State_Id" class="control-label"></label>
-                <select asp-for="State_Id" class="form-control" asp-items="ViewBag.State_Id"></select>
+                <select asp-for="State_Id" class="form-control" asp-items="ViewBag.State_Id">
+                    <option>Seleccionar Estado</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="Location_Id" class="control-label"></label>
-                <select asp-for="Location_Id" class="form-control" asp-items="ViewBag.Location_Id"></select>
+                <label asp-for="IdLocation" class="control-label"></label>
+                <select asp-for="IdLocation" class="form-control" asp-items="ViewBag.IdLocation">
+                    <option>Seleccionar Ubicación</option>
+                </select>
             </div>
 
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="CoverPhoto" class="control-label"></label>
                 <div class="custom-file">
                     <input asp-for="CoverPhoto" class="custom-file-input" id="customFile" />
@@ -43,6 +71,12 @@
                 </div>
                 
                 <span asp-validation-for="CoverPhoto" class="text-danger"></span>
+            </div>*@
+
+            <div class="form-group">
+                <label asp-for="ImagePath"></label>
+                <input type="file" asp-for="ImagePath" class="form-control"/>
+                <span class="text-danger" asp-validation-for="ImagePath"></span>
             </div>
 
 

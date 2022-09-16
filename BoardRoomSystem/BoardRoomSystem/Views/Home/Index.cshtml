@@ -1,236 +1,461 @@
-﻿@model BoardRoomSystem.Models.ViewModels.ReservationsViewModel
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
-<style>
-    .popper,
-    .tooltip {
-        position: absolute;
-        z-index: 9999;
-        background: #FFC107;
-        color: black;
-        width: 150px;
-        border-radius: 3px;
-        box-shadow: 0 0 2px rgba(0,0,0,0.5);
-        padding: 10px;
-        text-align: center;
-    }
-</style>
 
 
-@using (Html.BeginForm("Index", "Home", FormMethod.Post))
-{
+<h1 class="text-center">Sistema de Reservación de Salas</h1>
+<br />
 
-   @*<!-- Modal -->*@
-    <div class="modal fade" id="reservationsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Reservar Sala</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="modal-body">
+<label>Filtros</label>
+<div>
 
-                    <form id="create-reservation">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-3">
+        <select class="form-control filter" id="loc_selector" name="loc_selector">
+            <option value='all'>Todas las Ubicaciones</option>
+        </select>
+    </div>
 
-                        <div class="form-group">
-                            <label class="control-label">Asunto</label>
-                            <input asp-for="Reservations.Reservation_Subject" id="txtSubject" class="form-control" />
-                        </div>
-
-                        <div class="form-group">
-                             @*@{
-                                SelectList item8 = ViewBag.Location;
-                              }*@
-                            <div class="form-group">
-                                <label>Ubicaciones</label>
-                                <div class="col-md-14">
-                                   @*@Html.DropDownListFor(model => model.Reservations.Location,ViewBag.Location as SelectList, "-- Seleccionar Sala--", new { @class = "form-control" })*@
-                                   @Html.DropDownList("Location", Model.Location, "Seleccionar Ubicación" , new { @class = "form-control", id = "Location" })
-                                   @* @Html.ValidationMessageFor(model => model.Reservations.Location.Location_Id, "", new { @class = "text-danger" })*@
-                                </div>
-                            </div>
-                        </div>
-                        @*<div class="form-group">
-                            <label>Ubicaciones</label>
-                            <select asp-for="Reservations.Location.Location_Id" class="form-control" asp-items="ViewBag.Location_Id"></select>
-                        </div>*@
-
-         
-                        <div class="form-group">
-                            @*@{
-                                SelectList dataItems2 = ViewBag.MeetingRooms;
-                            }*@
-                            <div class="form-group">
-                                <label>Salas</label>
-                                <div class="col-md-14">
-                                    @Html.DropDownList("MeetingRooms", Model.MeetingRooms, "Seleccionar Sala" , new { @class = "form-control", id = "MeetingRooms" })
-                                    @*@Html.DropDownListFor(model => model.MeetingRooms, dataItems2, "-- Seleccionar Sala--", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Reservations.MeetingRooms.MTGR_Id, "", new { @class = "text-danger" })*@
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @*@{
-                                SelectList dataItems3 = ViewBag.AreasViewModel;
-                            }*@
-                            <div class="form-group">
-                                <label>Área de quién reserva la sala</label>
-                                <div class="col-md-14">
-                                    @Html.DropDownList("AreasViewModel", Model.AreasViewModel, "Seleccionar Área" , new { @class = "form-control", id = "AreasViewModel" })
-                                   @* @Html.DropDownListFor(model => model.AreasViewModel, dataItems3, "-- Seleccionar Área--", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Reservations.AreasViewModel.Area_Id, "", new { @class = "text-danger" })*@
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-floating">
-                            <label for="start" class="form-label">Fecha Inicio</label>
-                            <input asp-for="Reservations.Reservation_StartDate" class="form-control" id="txtStart" />
-                             @Html.ValidationMessageFor(m => m.Reservations.Reservation_StartDate)
-                        </div>
-                        <div class="form-group">
-                            <label for="end" class="control-label">Fecha Final</label>
-                            <input asp-for="Reservations.Reservation_EndtDate" class="form-control" id="txtEnd" />
-                            @Html.ValidationMessageFor(m => m.Reservations.Reservation_EndtDate)
-                        </div>
+    <div class="col-md-3">
+        <select class="form-control filter" id="room_selector" name="room_selector">
+            <option value='all'>Todas las Salas</option>
+        </select>
+    </div>
+</div>
 
 
-                        <div class="form-group">
-                            <label class="control-label">Destinatario</label>
-                            <input asp-for="Reservations.Reservation_Recipient" id="txtRecipient" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Número de personas</label>
-                            <input asp-for="Reservations.Reservation_NumbPeople" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Reservations.Reservation_Description" class="control-label"></label>
-                            <input asp-for="Reservations.Reservation_Description" class="form-control" />
-                            <span asp-validation-for="Reservations.Reservation_Description" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="Reservations.Reservation_Delegate" class="control-label"></label>
-                            <input asp-for="Reservations.Reservation_Delegate" class="form-control" />
-                            <span asp-validation-for="Reservations.Reservation_Delegate" class="text-danger"></span>
-                        </div>
-                        <br />
-
-                        @*<div class="form-group">
-                        <input type="submit" value="Guardar" class="btn btn-primary" />
-                        <a asp-action="Index" class="btn btn-warning">Regresar</a>
-                        </div>*@
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                           @* <input type="submit" id="btnSave" value="Guardar" class="btn btn-primary" />*@
-                            @*<div class="form-group">
-                                <button type="button" class="btn btn-primary" data-ajax-method="get" data-toggle="ajax-modal" data-target="#ValidateAddress"
-                                            data-url="@Url.Action("SaveReservation", new { model = Model })">Guardar</button>
-                                
-                            </div>*@
-                        </div>
+<br />
+<br />
+<br />
+<div id="calender"></div>
+<br />
 
 
-
-                    </form>
-
-                </div>
-
+<div id="myModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span id="eventTitle"></span></h4>
+            </div>
+            <div class="modal-body">
+                <button id="btnDelete" class="btn btn-default btn-sm pull-right">
+                    <span class="glyphicon glyphicon-remove"></span> Eliminar
+                </button>
+                <button id="btnEdit" class="btn btn-default btn-sm pull-right" style="margin-right:5px;">
+                    <span class="glyphicon glyphicon-pencil"></span> Editar
+                </button>
+                <p id="pDetails"></p>
+                <p id="pRoom"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
+</div>
+
+<div id="myModalSave" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Reservación</h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="col-md-12 form-horizontal">
+                    <input type="hidden" id="hdEventID" value="0" />
+                    <div class="form-group">
+                        <label>Asunto</label>
+                        <input type="text" id="txtSubject" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <select class="form-control" id="txtLocation">
+                            <option>--Seleccionar Ubicación--</option>
+                        </select>
+                        @*<input type="text" id="txtLocation" class="form-control" />*@
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sala</label>
+                        <select class="form-control" id="txtRoom">
+                            <option>--Seleccionar Sala--</option>
+                        </select>
+                        @*<input type="text" id="txtRoom" class="form-control" />*@
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Inicio</label>
+                        <div class="input-group date" id="dtp1">
+                            <input type="text" id="txtStart" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="chkIsFullDay" checked="checked" />  Todo el día</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="divEndDate" style="display:none">
+                        <label>Fecha Final</label>
+                        <div class="input-group date" id="dtp2">
+                            <input type="text" id="txtEnd" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="txtDescription" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Color de la etiqueta</label>
+                        <select id="ddThemeColor" class="form-control">
+                            <option value="">Predeterminado</option>
+                            <option value="#DC143C">Rojo</option>
+                            <option value="#6495ED">Azúl</option>
+                            <option value="black">Negro</option>
+                            <option value="#8FBC8F">Verde</option>
+                            <option value="#808080">Gris</option>
+                            <option value="#FFA07A">Salmon</option>
+                        </select>
+                    </div>
+                    <button type="button" id="btnSave" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Alert != null)
+{
+    <div class="alert alert-dismissable alert-info">
+        <button type="button" class="close" data-dismiss="alert">
+            &times;
+        </button>
+        <strong>Aviso!</strong> @ViewBag.Alert
+    </div>
 }
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script src="~/js/locale-all.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        @if (ViewBag.Alert != null)
+        {
+            <div class="alert alert-dismissable alert-info">
+                 <button type="button" class="close" data-dismiss="alert">
+                     &times;
+                 </button>
+                 <strong>Aviso!</strong> @ViewBag.Alert
+             </div>
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            var events = [];
+            var selectedEvent = null;
+            var initialLocaleCode = 'es';
+            FetchEventAndRenderCalendar();
+            function FetchEventAndRenderCalendar() {
+                events = [];
+                $.ajax({
+                    type: "GET",
+                    url: "/Home/GetRooms",
+                    success: function (data) {
+                        $.each(data, function (i, v) {
+                            events.push({
+                                eventID: v.EventID,
+                                title: v.Subject,
+                                locationId: v.IdLocation,
+                                locationName: v.NameLocation,
+                                RoomId: v.IdMeetR,
+                                RoomName: v.NameMeetR,
+                                description: v.Description,
+                                start: moment(v.Start),
+                                end: v.End != null ? moment(v.End) : null,
+                                color: v.ThemeColor,
+                                allDay: v.IsFullDay
+                            });
+                        })
 
-
-<script>
-
-    document.addEventListener('DOMContentLoaded', function() {
-
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            locale: 'es',
-            timeZone: 'local',
-            customButtons: {
-                myCustomButton: {
-                    text: 'Filtros',
-                    click: function() {
-                        alert('clicked the custom button!');
+                        GenerateCalender(events);
+                    },
+                    error: function (error) {
+                        alert('Error');
                     }
-                }
-            },
-
-            initialView: 'dayGridMonth',
-            events: @Html.Raw(ViewData["Reservations"]),
-            resources: @Html.Raw(ViewData["Resources"]),
-            headerToolbar: {
-                left: 'today prev,next myCustomButton',
-                center: 'title',
-                right: 'timeGridWeek,dayGridMonth,listMonth'
-            },
-            eventDidMount: function(info) {
-                var tooltip = new Tooltip(info.el, {
-                    title: info.event.extendedProps.description,
-                    placement: 'top',
-                    trigger: 'hover',
-                    container: 'body'
                 });
-            },
-            selectable: true,
-            selectHelper: true,
-            selectMirror: true,
+            };
 
+            function GenerateCalender(events) {
+                $('#calender').fullCalendar('destroy');
+                $('#calender').fullCalendar({
+                    contentHeight: 400,
+                    defaultDate: new Date(),
+                    timeFormat: 'h(:mm)a',
+                    header: {
+                        left: 'prev,next today, listDay',
+                        center: 'title',
+                        right: 'month,agendaWeek,agendaDay'
+                    },
+                    locale: initialLocaleCode,
+                    eventLimit: true,
+                    eventColor: '#378006',
+                    events: events,
+                    eventClick: function (calEvent, jsEvent, view) {
+                        selectedEvent = calEvent;
+                        $('#myModal #eventTitle').text(calEvent.title);
+                        var $description = $('<div/>');
+                        $description.append($('<p/>').html('<b>Fecha de Inicio: </b>' + calEvent.start.format("DD-MMM-YYYY HH:mm a")));
+                        if (calEvent.end != null) {
+                            $description.append($('<p/>').html('<b>Fecha Final: </b>' + calEvent.end.format("DD-MMM-YYYY HH:mm a")));
+                        }
+                        $description.append($('<p/>').html('<b>Descripción: </b>' + calEvent.description));
+                        $('#myModal #pDetails').empty().html($description);
 
-            dateClick: function(selectInfo) {
-                info.date
-                console.log(info.date);
-            },
-            select: function(info) {
-                if (document.getElementById('txtStart') > document.getElementById('txtEnd')) {
-                    alert('Fecha Invalida');
-                    return;
+                        $description.append($('<p/>').html('<b>Ubicación: </b>' + calEvent.locationName));
+                        $('#myModal #pDetails').empty().html($description);
+
+                        $description.append($('<p/>').html('<b>Sala: </b>' + calEvent.RoomName));
+                        $('#myModal #pDetails').empty().html($description);
+
+                        $('#myModal').modal();
+                    },
+
+                    //eventRender: function eventRender(event, element, view) {
+                    //    var location = ['all', event.locationId].indexOf($('#loc_selector').val()) >= 0;
+                    //    var room = ['all', event.RoomId].indexOf($('#room_selector').val()) >= 0;
+                    //    return (location && room);
+                    //},
+
+                    eventRender: function eventRender(event, element, view) {
+                        var showTypes, showFacilities, showSearchTerms = true;
+                        var types = $('#loc_selector').val();
+                        var types2 = $('#room_selector').val();
+
+                        /* filters */
+
+                        if (types && types.length > 0) {
+                            if (types.trim().toLowerCase() == "all") {
+                                showTypes = true;
+                            }
+                            else {
+                                showTypes = types.indexOf(event.locationId) >= 0;
+                            }
+                        }
+                        if (types2 && types2.length > 0) {
+                            if (types2.trim().toLowerCase() == "all") {
+                                showTypes = true;
+                            }
+                            else {
+                                showTypes = types2.indexOf(event.RoomId) >= 0;
+                            }
+                        }
+
+                        return showTypes;
+                    }, //end: eventRender
+
+                    selectable: true,
+                    select: function (start, end) {
+                        selectedEvent = {
+                            eventID: 0,
+                            title: '',
+                            locationId: 0,
+                            RoomId: 0,
+                            description: '',
+                            start: start,
+                            end: end,
+                            allDay: false,
+                            color: ''
+                        };
+                        openAddEditForm();
+                        $('#calendar').fullCalendar('unselect');
+                    },
+                    editable: true,
+                    eventDrop: function (event) {
+                        var data = {
+                            EventID: event.eventID,
+                            Subject: event.title,
+                            IdLocation: event.locationId,
+                            IdMeetR: event.RoomId,
+                            Start: event.start.format('DD/MM/YYYY HH:mm A'),
+                            End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm A') : null,
+                            Description: event.description,
+                            ThemeColor: event.color,
+                            IsFullDay: event.allDay
+                        };
+                        SaveEvent(data);
+                    }
+                })
+            };
+
+            $('#btnEdit').click(function () {
+                //Open modal dialog for edit event
+                openAddEditForm();
+            });
+            $('#btnDelete').click(function () {
+                if (selectedEvent != null && confirm('¿Estás seguro de querer eliminar esta reservación?')) {
+                    $.ajax({
+                        type: "POST",
+                        url: '/Home/DeleteEvent',
+                        data: { 'eventID': selectedEvent.eventID },
+                        success: function (data) {
+                            if (data.status) {
+                                //Refresh the calender
+                                FetchEventAndRenderCalendar();
+                                $('#myModal').modal('hide');
+                            }
+                        },
+                        error: function () {
+                            alert('Error');
+                        }
+                    })
                 }
-                else { 
-                document.getElementById('txtStart').value = info.startStr;
-                if (document.getElementById('txtEnd') != null) {
-                           document.getElementById('txtEnd').value = info.endStr;
+            });
+
+            $('#dtp1,#dtp2').datetimepicker({
+                format: 'DD/MM/YYYY HH:mm A'
+            });
+
+            $('#chkIsFullDay').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#divEndDate').hide();
                 }
-                $('#reservationsModal').modal('toggle');
-
-                console.log(info.startStr);
-                console.log(info.endStr);
+                else {
+                    $('#divEndDate').show();
                 }
+            });
 
+            function openAddEditForm() {
+                if (selectedEvent != null) {
+                    $('#hdEventID').val(selectedEvent.eventID);
+                    $('#txtSubject').val(selectedEvent.title);
+                    $('#txtLocation').val(selectedEvent.locationId);
+                    $('#txtRoom').val(selectedEvent.RoomId);
+                    $('#txtStart').val(selectedEvent.start.format('DD/MM/YYYY HH:mm A'));
+                    $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
+                    $('#chkIsFullDay').change();
+                    $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm A') : '');
+                    $('#txtDescription').val(selectedEvent.description);
+                    $('#ddThemeColor').val(selectedEvent.color);
 
+                }
+                $('#myModal').modal('hide');
+                $('#myModalSave').modal();
             }
 
 
+            $('#btnSave').click(function () {
+                //Validation/
+                if ($('#txtSubject').val().trim() == "") {
+                    alert('Asunto requerido.');
+                    return;
+                }
+                if ($('#txtLocation').val() == null) {
+                    alert('Seleccione una Ubicación.');
+                    return;
+                }
+                if ($('#txtRoom').val() == null) {
+                    alert('Seleccione una Sala.');
+                    return;
+                }
+                if ($('#txtStart').val().trim() == "") {
+                    alert('Coloque una Fecha inicial.');
+                    return;
+                }
+                if ($('#chkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+                    alert('Fecha final requerida.');
+                    return;
+                }
+                else {
+                    var startDate = moment($('#txtStart').val(), "DD/MM/YYYY HH:mm A").toDate();
+                    var endDate = moment($('#txtEnd').val(), "DD/MM/YYYY HH:mm A").toDate();
+                    if (startDate > endDate) {
+                        alert('La fecha inicial no puede ser mayor que la fecha final.');
+                        return;
+                    }
+                }
 
-            //select: function(arg) {
-            //    var title = prompt('Nombre del Evento: ');
-            //    if (title) {
-            //        calendar.addEvent({
-            //            title: title
-            //        })
-            //    }
-            //    calendar.unselect()
-            //},
-            //eventClick: function(arg) {
-            //    if (confirm('Estas seguro de eliminar este evento?')) {
-            //        arg.remove()
-            //    }
-            //},
+                var data = {
+                    EventID: $('#hdEventID').val(),
+                    Subject: $('#txtSubject').val().trim(),
+                    IdLocation: $('#txtLocation').val().trim(),
+                    IdMeetR: $('#txtRoom').val().trim(),
+                    Start: $('#txtStart').val().trim(),
+                    End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
+                    Description: $('#txtDescription').val(),
+                    ThemeColor: $('#ddThemeColor').val(),
+                    IsFullDay: $('#chkIsFullDay').is(':checked')
+                }
+                SaveEvent(data);
+                // call function for submit data to the server
+            });
+
+
+            function SaveEvent(data) {
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/SaveEvent',
+                    data: data,
+                    success: function (data) {
+                        if (data.status) {
+                            //Refresh the calender
+                            FetchEventAndRenderCalendar();
+                            $('#myModalSave').modal('hide');
+                        }
+                    },
+                    error: function () {
+                        alert('Error al guardar');
+                    }
+                })
+            };
+
+            GetLocations();
+            $('#loc_selector').change(function () {
+                var id = $(this).val();
+                $('#room_selector').empty();
+                $('#room_selector').append('<option value="all">All Rooms</option>');
+                $.ajax({
+                    url: '/Home/room_selector?id=' + id,
+                    success: function (result) {
+                        $.each(result, function (i, data) {
+                            $('#room_selector').append('<Option value=' + data.idMeetR + '>' + data.nameMeetR + '</Option>');
+                        });
+                    }
+                });
+            });
+
+            $('.filter').on('change', function () {
+                $('#calender').fullCalendar('rerenderEvents');
+            });
+
         });
-        calendar.render();
-    });
 
-</script>
+        function GetLocations() {
+            $.ajax({
+                url: '/Home/loc_selector',
+                success: function (result) {
+                    $.each(result, function (i, data) {
+                        $('#loc_selector').append('<Option value=' + data.idLocation + '>' + data.nameLocation + '</Option>');
+                    });
+                }
+            });
+        }
 
-<div class="text-center">
-    <h3 class="display-4">Sistema de Reservación de Salas</h3>
-    <div id="calendar"></div>
-</div>
+    </script>
+
+
+    <script src="~/js/Cascade.js"></script>
+}
+
+
+

@@ -7,78 +7,121 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using BoardRoomSystem.Areas.Identity.Data;
 using BoardRoomSystem.Models;
+using BoardRoomSystem.Areas.Identity.Data;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class LocationController : Controller
     {
-        private readonly IDAL _dal;
-        private readonly UserManager<ApplicationUser> _usermanager;
+        private readonly ApplicationDbContext dBContext;
 
-        public LocationController(IDAL idal, UserManager<ApplicationUser> usermanager)
+        public LocationController(ApplicationDbContext dBContext)
         {
-            _dal = idal;
-            _usermanager = usermanager;
+            this.dBContext = dBContext;
         }
 
-        // GET: Location
-        public IActionResult Index()
+        public async Task<IActionResult>Index()
         {
-            if (TempData["Alert"] != null)
-            {
-                ViewData["Alert"] = TempData["Alert"];
-            }
-            return View(_dal.GetLocations());
+            var applicationDbContext = dBContext.Locations.Include(a => a.IdLocation);
+            return View(await dBContext.Locations.ToListAsync());
         }
 
-        // GET: Location/Details/5
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? Id)
         {
-            if (id == null)
+            if (Id == null)
             {
                 return NotFound();
             }
 
-            var location = _dal.GetLocation((int)id);
-            if (location == null)
+            var areasViewModel = await dBContext.Locations.FirstOrDefaultAsync(a => a.IdLocation == Id);
+
+            if (areasViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(location);
+            return View(areasViewModel);
         }
 
-        // GET: Location/Create
+        //Crear por medio de vista
+
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Location/Create
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Location_Id,Location_Name")] Location location)
+        public async Task<IActionResult> Create(Location locations)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _dal.CreateLocation(location);
-                    TempData["Alert"] = "Success! You created a location for: " + location.Location_Name;
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ViewData["Alert"] = "An error occurred: " + ex.Message;
-                    return View(location);
-                }
+                dBContext.Add(locations);
+                await dBContext.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
 
             }
-            return View(location);
+
+            return View(locations);
         }
+
+        //// GET: Location
+        //public IActionResult Index()
+        //{
+        //    if (TempData["Alert"] != null)
+        //    {
+        //        ViewData["Alert"] = TempData["Alert"];
+        //    }
+        //    return View(_dal.GetLocations());
+        //}
+
+        //// GET: Location/Details/5
+        //public IActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var location = _dal.GetLocation((int)id);
+        //    if (location == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(location);
+        //}
+
+        //// GET: Location/Create
+        //public IActionResult Create()
+        //{
+        //    return View();
+        //}
+
+        //// POST: Location/Create
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult Create([Bind("IdLocation,NameLocation")] Location location)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _dal.CreateLocation(location);
+        //            TempData["Alert"] = "Success! You created a location for: " + location.NameLocation;
+        //            return RedirectToAction(nameof(Index));
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            ViewData["Alert"] = "An error occurred: " + ex.Message;
+        //            return View(location);
+        //        }
+
+        //    }
+        //    return View(location);
+        //}
     }
 }

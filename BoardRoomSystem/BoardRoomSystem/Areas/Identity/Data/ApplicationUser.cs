@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using BoardRoomSystem.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace BoardRoomSystem.Areas.Identity.Data
+namespace BoardRoomSystem.Areas.Identity.Data;
+
+// Add profile data for application users by adding properties to the ApplicationUser class
+public class ApplicationUser : IdentityUser
 {
-    // Add profile data for application users by adding properties to the AplicationUser class
-    public class ApplicationUser : IdentityUser
-    {
-        [PersonalData]
-        [Column(TypeName = "nvarchar(100)")]
-        public string FirstName { get; set; }
+    public string FirstNameUser { get; set; }
+    public string LastNameUser { get; set; }
+    //public IEnumerable<Event> Events { get; set; }
+}
+public class ApplicationRole : IdentityRole
+{
 
-        [PersonalData]
-        [Column(TypeName = "nvarchar(100)")]
-        public string LastName { get; set; }
-
-        public virtual ICollection<Reservations> Reservations { get; set; }
-    }
 }
 

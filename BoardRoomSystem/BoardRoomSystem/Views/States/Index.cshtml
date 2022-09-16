@@ -1,11 +1,16 @@
-﻿@model IEnumerable<BoardRoomSystem.Models.States>
+﻿@model IEnumerable<BoardRoomSystem.Models.State>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Estados</h1>
+<h2>Estados</h2>
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><label>Estados</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 @if (ViewData["Alert"] != null)
 {
     <h3>@ViewData["Alert"]</h3>
@@ -33,7 +38,7 @@
                         @Html.DisplayFor(modelItem => item.state_Name)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.State_Id">Details</a>
+                        <a asp-action="Details" asp-route-id="@item.State_Id" class="btn btn-sm btn-primary">Details</a>
                     </td>
                 </tr>
             }

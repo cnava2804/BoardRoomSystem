@@ -5,9 +5,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h2>Crear Ubicación</h2>
 
-<h4>Location</h4>
+
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><a asp-action="Index">Ubicaciones</a></li>
+  <li><label>Nuevo</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 <hr />
 
 @if (ViewData["Alert"] != null)
@@ -19,19 +25,18 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Location_Name" class="control-label"></label>
-                <input asp-for="Location_Name" class="form-control" />
-                <span asp-validation-for="Location_Name" class="text-danger"></span>
+                <label asp-for="NameLocation" class="control-label"></label>
+                <input asp-for="NameLocation" class="form-control" />
+                <span asp-validation-for="NameLocation" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-warning">Regresar</a>
             </div>
         </form>
     </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

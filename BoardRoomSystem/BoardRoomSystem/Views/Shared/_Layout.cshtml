@@ -4,71 +4,107 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BoardRoomSystem</title>
-    <link href="https://fonts.google.com/css?family=Roboto&display=swap" rel="stylesheet" />
-    @*<link rel="stylesheet" href="~/css/bootstrap.css" />*@
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="~/css/prism-okaidia.css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet" />
-    <!--Full Calendar Scripts-->
-    <link rel="stylesheet" href="~/css/main.css" />
-    <script src="~/js/main.js"></script>
-    <script src="https://unpkg.com/popper.js/dist/umd/popper.min.js"></script>
-    <script src="https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js"></script>
-    <link rel="stylesheet" href="~/css/site.css" />
-
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+    @*<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />*@
+    <link href="~/content/Site.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="~/BoardRoomSystem.styles.css" asp-append-version="true" />*@
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/js/modernizr-2.6.2.js"></script>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar navbar-light border-bottom box-shadow mb-3" style="background-color: #e3f2fd;">
-            <div class="container">
+        @*<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BoardRoomSystem</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+                <partial name="_LoginPartial"/>
+            </div>
+        </nav>*@
+        <div class="navbar navbar-default navbar-static-top">
+            <div class="container">
 
-                <ul class="navbar-nav flex-grow-1" aria-labelledby="navbarDropdownMenuLink">
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="MeetingRooms" asp-action="Index">Salas</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Reservations" asp-action="Index">Reservaciones</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Location" asp-action="Index">Ubicaciones</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Areas" asp-action="Index">Areas</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="States" asp-action="Index">Estados</a></li>
-                </ul>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial.cshtml" />
-                    @*<ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    
+                </div>
+                <div class="navbar-collapse collapse">
+                    @*<ul class="nav navbar-nav">
+                        @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        @Html.ActionLink("Salas", "Index", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
+                        @Html.ActionLink("Ubicaciones", "Index", "Location", new { area = "" }, new { @class = "navbar-brand" })
+                        @Html.ActionLink("Estados", "Index", "States", new { area = "" }, new { @class = "navbar-brand" })
+                        @Html.ActionLink("Areas", "Index", "Areas", new { area = "" }, new { @class = "navbar-brand" })
+                        
                     </ul>*@
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Salas", "Index", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Ubicaciones", "Index", "Location", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Estados", "Index", "States", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Areas", "Index", "Areas", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+                    <ul class="nav navbar-nav">
+                        @Html.ActionLink("Usuarios", "Index", "User", new { area = "" }, new { @class = "navbar-brand" })
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
-        </nav>
+           
+        </div>
     </header>
-    <div class="container">
+    @*<div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
+    </div>*@
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer class="footer">
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
     </div>
 
-    <footer class="border-top footer text-muted">
+    @*<footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2022 - BoardRoomSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/prism.js"></script>
+    </footer>*@
+
+    <script src="~/js/jquery-1.10.2.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/moment@2.27.0/min/moment.min.js'></script>
-
-
-    @RenderSection("Scripts", required: false)
+    <script src="https://kit.fontawesome.com/249bd0cec8.js" crossorigin="anonymous"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

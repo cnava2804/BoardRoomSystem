@@ -1,0 +1,14 @@
+﻿/*.fc-left{
+    background-color: aquamarine;
+}
+
+.fc-right{
+  background-color:red; 
+  padding:10px;
+  position: relative;
+  right:6rem;
+}
+.fc-state-active {
+    background-color: aqua;
+    padding:10px;
+}*/

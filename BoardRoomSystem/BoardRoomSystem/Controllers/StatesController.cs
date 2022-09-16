@@ -1,4 +1,4 @@
-﻿using BoardRoomSystem.Data;
+﻿using BoardRoomSystem.Areas.Identity.Data;
 using BoardRoomSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class StatesController : Controller
     {
-        private readonly BoardRoomSystemDBContext dBContext;
+        private readonly ApplicationDbContext dBContext;
 
-        public StatesController(BoardRoomSystemDBContext dBContext)
+        public StatesController(ApplicationDbContext dBContext)
         {
             this.dBContext = dBContext;
         }
@@ -49,7 +49,7 @@ namespace BoardRoomSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(States statesViewModel)
+        public async Task<IActionResult> Create(State statesViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +81,7 @@ namespace BoardRoomSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, States statesViewModel)
+        public async Task<IActionResult> Edit(int id, State statesViewModel)
         {
             if (id != statesViewModel.State_Id)
             {

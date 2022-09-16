@@ -5,9 +5,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Crear</h1>
+<h2>Crear Área</h2>
 
-<h4>Areas</h4>
+
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><a asp-action="Index">Áreas</a></li>
+  <li><label>Nuevo</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 <hr />
 
 @if (ViewData["Alert"] != null)
@@ -36,4 +42,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    }
+}

@@ -1,0 +1,71 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model BoardRoomSystem.Core.ViewModels.EditUserViewModel
+
+        <h3 class="h3">Editar Usuario</h3>
+
+    <div class="container cont_usuario">
+        <div class="col-md-9 offset-md-3">
+
+
+            @using (Html.BeginForm("OnPost", "User"))
+            {
+                @Html.HiddenFor(h => @Model.User.Id)
+                ;
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label">Nombre</label>
+                        <input asp-for="@Model.User.FirstNameUser" class="form-control" autocomplete="username" aria-required="true" />
+                        <span asp-validation-for="@Model.User.FirstNameUser" class="text-danger">
+                        </span>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label">Apellido</label>
+                        <input asp-for="@Model.User.LastNameUser" class="form-control" autocomplete="username" aria-required="true" />
+                        <span asp-validation-for="@Model.User.LastNameUser" class="text-danger">
+                        </span>
+                    </div>
+                </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <label class="form-label">Usuario</label>
+                    <input asp-for="@Model.User.Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <span asp-validation-for="@Model.User.Email" class="text-danger">
+                    </span>
+                </div>
+            </div>
+                <br />
+                <h5 class="mb-3">Roles </h5>
+
+                <div class="my-3">
+
+                    @for (int i = 0; i < @Model.Roles.Count(); i++)
+                    {
+                        <div class="form-check">
+                            @Html.CheckBoxFor(c => @Model.Roles[i].Selected)
+                            @Html.HiddenFor(h => @Model.Roles[i].Value)
+
+                            @Html.LabelFor(l => @Model.Roles[i].Selected, @Model.Roles[i].Text, new {@class="form-check-label"})
+                            @Html.HiddenFor(h => @Model.Roles[i].Text)
+                        </div>
+                    }
+                </div>
+              <div class="row">
+                <div class="col-md-3 cont_register">
+                    <button type="submit" value="save" class="form-control btn btn-primary">Guardar</button>
+                </div>
+                <div class="col-md-3 cont_register">
+                    <a asp-action="Index" class="form-control btn btn-danger">Cancelar</a>
+                </div>
+           
+            </div>
+            }
+        </div>
+    </div>
+
+
+

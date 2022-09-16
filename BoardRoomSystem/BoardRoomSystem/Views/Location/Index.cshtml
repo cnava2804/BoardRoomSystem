@@ -5,19 +5,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Locations</h1>
+<h2>Ubicaciones</h2>
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><label>Ubicaciones</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 @if (ViewData["Alert"] != null)
 {
     <h3>@ViewData["Alert"]</h3>
 }
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-success">Nuevo</a>
 </p>
-<table class="table">
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Location_Name)
+                @Html.DisplayNameFor(model => model.NameLocation)
             </th>
             <th></th>
         </tr>
@@ -27,12 +34,14 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Location_Name)
+                    @Html.DisplayFor(modelItem => item.NameLocation)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Location_Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.IdLocation" class="btn btn-sm btn-primary">Details</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+</div>

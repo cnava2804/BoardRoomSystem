@@ -1,26 +1,83 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using BoardRoomSystem.Areas.Identity.Data;
+using BoardRoomSystem.Core.Repositories;
+using BoardRoomSystem.Repositorio;
+using BoardRoomSystem.Repositories;
+using BoardRoomSystem.Core;
 
-namespace BoardRoomSystem
+var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+//Requerimientos de contraseñas 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequiredLength = 4;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+
+})
+
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+#region Authorization
+
+AddAuthorizationPolicies();
+
+#endregion
+
+AddScoped();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    app.UseExceptionHandler("/Home/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
+
+app.Run();
+
+
+void AddAuthorizationPolicies()
+{
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Admin));
+        options.AddPolicy(Constants.Policies.RequireUser, policy => policy.RequireRole(Constants.Roles.User));
+    });
+}
+
+void AddScoped()
+{
+    builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+    builder.Services.AddScoped<IRoleRepositorio, RoleRepositorio>();
+    builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
 }

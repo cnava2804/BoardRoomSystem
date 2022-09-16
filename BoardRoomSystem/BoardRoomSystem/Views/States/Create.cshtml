@@ -1,12 +1,18 @@
-﻿@model BoardRoomSystem.Models.States
+﻿@model BoardRoomSystem.Models.State
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Crear Estado</h1>
+<h2>Crear Estado</h2>
 
+<ol class="breadcrumb">
+  <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+  <li><a asp-action="Index">Estados</a></li>
+  <li><label>Nuevo</label></li>
+  @*<li class="active">Data</li>*@
+</ol>
 <hr />
 
 @if (ViewData["Alert"] != null)
