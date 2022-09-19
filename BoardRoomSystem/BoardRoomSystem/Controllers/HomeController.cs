@@ -56,7 +56,8 @@ namespace BoardRoomSystem.Controllers
 
             var query2 = (from A in dc.Events
                           join B in dc.MeetingRooms on A.MeetingRoom.IdMeetR equals B.IdMeetR
-                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation}).ToList();
+                          join C in dc.Users on A.ApplicationUser.Id equals C.Id
+                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation, C.Id}).ToList();
 
            
 
@@ -64,7 +65,6 @@ namespace BoardRoomSystem.Controllers
         }
 
 
-    
 
         [HttpPost]
         public ActionResult SaveEvent(Event e)
@@ -95,7 +95,7 @@ namespace BoardRoomSystem.Controllers
                     {
                         if (e.EventID > 0)
                         {
-                            if (itemss.UserId == userIdValue)
+                            if (userIdValue == e.UserId)
                             {
                                 //Update the event
                                 var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
@@ -109,40 +109,59 @@ namespace BoardRoomSystem.Controllers
                                     v.ThemeColor = e.ThemeColor;
                                     v.IdLocation = e.IdLocation;
                                     v.IdMeetR = e.IdMeetR;
-                                    v.UserId = userIdValue;
+                                    v.UserId = e.UserId;
+
+
+                                    dc.SaveChanges();
+
+                                    status = true;
+
+
+                                    return new JsonResult(new { status = status });
                                 }
                                 
                             }
-                            
+                            //else
+                            //{
+                            //    ViewBag.Message = "Error";
+                            //    status = true;
+                            //    return new JsonResult(new { status = status });
+
+                            //}
+
 
                         }
                         else
                         {
-                            ViewBag.Message = "Error";
-                            status = true;
-                            return new JsonResult(e, new { status = status });
-
-                        }
-                        foreach (var item1 in eventLst)
-                        {
-                            if (e.Start == item1.Start)
+                            foreach (var item1 in eventLst)
                             {
-                                if (e.End == item1.End)
-                                {
-                                    if (e.IdMeetR == item1.IdMeetR)
-                                    {
-                                        ViewBag.Alert = "Lo sentimos, esta solicitud ya existe.";
-                                        return View(e);
-                                    }
-                                    else
-                                    {
-                                        dc.Events.Add(e);
-                                    }
 
+                                if (e.Start >= item1.Start)
+                                {
+                                    if (e.End <= item1.End)
+                                    {
+                                        if (e.IdMeetR == item1.IdMeetR)
+                                        {
+                                            ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                            return View(e);
+
+                                            //status = true;
+
+
+                                            //return new JsonResult(new { status = status });
+                                        }
+
+
+                                    }
                                 }
 
+                                
+                                
 
                             }
+                            dc.Events.Add(e);
+
+                           
 
                         }
                         
@@ -190,16 +209,42 @@ namespace BoardRoomSystem.Controllers
         }
 
         [HttpPost]
-        public JsonResult DeleteEvent(int eventID)
+        public ActionResult DeleteEvent(int eventID, Event e)
         {
+            List<Event> eventLst;
+            eventLst = (from d in dc.Events
+                        select d).ToList();
             var status = false;
-            var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
-            if (v != null)
+
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            if (claimsIdentity != null)
             {
-                dc.Events.Remove(v);
-                dc.SaveChanges();
-                status = true;
+                // the principal identity is a claims identity.
+                // now we need to find the NameIdentifier claim
+                var userIdClaim = claimsIdentity.Claims
+                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
+                {
+                    var userIdValue = userIdClaim.Value;
+
+                    foreach (var itemss in eventLst)
+                    {
+                        if (e.EventID == itemss.EventID && itemss.UserId == userIdValue)
+                        {
+                            
+                            var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
+                            if (v != null)
+                            {
+                                dc.Events.Remove(v);
+                                dc.SaveChanges();
+                                status = true;
+                            }
+                        }
+                    }
+                }
             }
+
 
             return new JsonResult ( new { status = status } );
         }

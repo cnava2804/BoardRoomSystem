@@ -2,6 +2,21 @@
     ViewData["Title"] = "Home Page";
 }
 
+@{
+@using System.Security.Claims;
+   var claimsIdentity = User.Identity as ClaimsIdentity;
+   if (claimsIdentity != null)
+   {
+   // the principal identity is a claims identity.
+  // now we need to find the NameIdentifier claim
+       var userIdClaim = claimsIdentity.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+       if (userIdClaim != null) {
+            var userIdValue = userIdClaim.Value;
+            <input type="hidden" id="hdUserID" value="@userIdValue.ToString()" />
+       }
+   }
+}
 
 
 <h1 class="text-center">Sistema de Reservación de Salas</h1>
@@ -65,6 +80,7 @@
             <div class="modal-body">
                 <form method="post" class="col-md-12 form-horizontal">
                     <input type="hidden" id="hdEventID" value="0" />
+                    
                     <div class="form-group">
                         <label>Asunto</label>
                         <input type="text" id="txtSubject" class="form-control" />
@@ -184,7 +200,8 @@
                                 start: moment(v.Start),
                                 end: v.End != null ? moment(v.End) : null,
                                 color: v.ThemeColor,
-                                allDay: v.IsFullDay
+                                allDay: v.IsFullDay,
+                                userID: v.Id
                             });
                         })
 
@@ -275,7 +292,8 @@
                             start: start,
                             end: end,
                             allDay: false,
-                            color: ''
+                            color: '',
+                            userID: $('#hdUserID').val()
                         };
                         openAddEditForm();
                         $('#calendar').fullCalendar('unselect');
@@ -291,7 +309,8 @@
                             End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm A') : null,
                             Description: event.description,
                             ThemeColor: event.color,
-                            IsFullDay: event.allDay
+                            IsFullDay: event.allDay,
+                            UserId: event.userID
                         };
                         SaveEvent(data);
                     }
@@ -316,7 +335,7 @@
                             }
                         },
                         error: function () {
-                            alert('Error');
+                            alert('Lo sentimos, usted no puede borrar reservaciones que no son suyas.');
                         }
                     })
                 }
@@ -347,7 +366,7 @@
                     $('#txtEnd').val(selectedEvent.end != null ? selectedEvent.end.format('DD/MM/YYYY HH:mm A') : '');
                     $('#txtDescription').val(selectedEvent.description);
                     $('#ddThemeColor').val(selectedEvent.color);
-
+                    $('#hdUserID').val(selectedEvent.userID);
                 }
                 $('#myModal').modal('hide');
                 $('#myModalSave').modal();
@@ -394,7 +413,8 @@
                     End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
                     Description: $('#txtDescription').val(),
                     ThemeColor: $('#ddThemeColor').val(),
-                    IsFullDay: $('#chkIsFullDay').is(':checked')
+                    IsFullDay: $('#chkIsFullDay').is(':checked'),
+                    UserId: $('#hdUserID').val()
                 }
                 SaveEvent(data);
                 // call function for submit data to the server
