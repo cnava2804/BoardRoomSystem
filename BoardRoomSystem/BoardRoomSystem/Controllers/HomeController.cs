@@ -18,7 +18,7 @@ using System.Security.Claims;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize(Roles = "Admin, User")]
+    [Authorize(Roles = "SuperAdmin, Admin, User")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -36,28 +36,29 @@ namespace BoardRoomSystem.Controllers
             return View();
         }
 
+        //public JsonResult GetEvents()
+        //{
+        //    var query = (from Event in dc.Events
+        //                 join MeetingRoom in dc.MeetingRooms on Event.MeetingRoom.IdMeetR equals MeetingRoom.IdMeetR
+        //                 select new
+        //                 {
+        //                     meetRId = MeetingRoom.IdMeetR,
+        //                     meetRName = MeetingRoom.NameMeetR
+        //                 }).ToList();
+
+        //    var events = dc.Events.ToList();
+        //    return Json(events, new System.Text.Json.JsonSerializerOptions { });
+
+        //}
+
         public JsonResult GetEvents()
-        {
-            var query = (from Event in dc.Events
-                         join MeetingRoom in dc.MeetingRooms on Event.MeetingRoom.IdMeetR equals MeetingRoom.IdMeetR
-                         select new
-                         {
-                             meetRId = MeetingRoom.IdMeetR,
-                             meetRName = MeetingRoom.NameMeetR
-                         }).ToList();
-
-            var events = dc.Events.ToList();
-            return Json(events, new System.Text.Json.JsonSerializerOptions { });
-
-        }
-
-        public JsonResult GetRooms()
         {
 
             var query2 = (from A in dc.Events
                           join B in dc.MeetingRooms on A.MeetingRoom.IdMeetR equals B.IdMeetR
                           join C in dc.Users on A.ApplicationUser.Id equals C.Id
-                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation, C.Id}).ToList();
+                          join D in dc.AreasViewModels on A.AreasViewModel.IdArea equals D.IdArea
+                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation, C.Id, D.IdArea}).ToList();
 
            
 
@@ -69,113 +70,184 @@ namespace BoardRoomSystem.Controllers
         [HttpPost]
         public ActionResult SaveEvent(Event e)
         {
-            //List<MeetingRoom> meetLst;
-            //meetLst = (from d in dc.MeetingRooms
-            //           select d).ToList();
             var status = false;
             List<Event> eventLst;
             eventLst = (from d in dc.Events
                         select d).ToList();
-
-            
-
             var claimsIdentity = User.Identity as ClaimsIdentity;
-            if (claimsIdentity != null)
+
+            if (this.User.IsInRole("User"))
             {
-                // the principal identity is a claims identity.
-                // now we need to find the NameIdentifier claim
-                var userIdClaim = claimsIdentity.Claims
-                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
-                if (userIdClaim != null)
+                if (claimsIdentity != null)
                 {
-                    var userIdValue = userIdClaim.Value;
+                    // the principal identity is a claims identity.
+                    // now we need to find the NameIdentifier claim
+                    var userIdClaim = claimsIdentity.Claims
+                        .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
 
-                    foreach (var itemss in eventLst)
+                    if (userIdClaim != null)
                     {
-                        if (e.EventID > 0)
+                        var userIdValue = userIdClaim.Value;
+
+                        foreach (var itemss in eventLst)
                         {
-                            if (userIdValue == e.UserId)
+                            if (e.EventID > 0)
                             {
-                                //Update the event
-                                var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                                if (v != null)
+                                if (userIdValue == e.UserId)
                                 {
-                                    v.Subject = e.Subject;
-                                    v.Start = e.Start;
-                                    v.End = e.End;
-                                    v.Description = e.Description;
-                                    v.IsFullDay = e.IsFullDay;
-                                    v.ThemeColor = e.ThemeColor;
-                                    v.IdLocation = e.IdLocation;
-                                    v.IdMeetR = e.IdMeetR;
-                                    v.UserId = e.UserId;
-
-
-                                    dc.SaveChanges();
-
-                                    status = true;
-
-
-                                    return new JsonResult(new { status = status });
-                                }
-                                
-                            }
-                            //else
-                            //{
-                            //    ViewBag.Message = "Error";
-                            //    status = true;
-                            //    return new JsonResult(new { status = status });
-
-                            //}
-
-
-                        }
-                        else
-                        {
-                            foreach (var item1 in eventLst)
-                            {
-
-                                if (e.Start >= item1.Start)
-                                {
-                                    if (e.End <= item1.End)
+                                    //Update the event
+                                    var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                                    if (v != null)
                                     {
-                                        if (e.IdMeetR == item1.IdMeetR)
-                                        {
-                                            ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                            return View(e);
+                                        v.Subject = e.Subject;
+                                        v.Start = e.Start;
+                                        v.End = e.End;
+                                        v.Description = e.Description;
+                                        v.IsFullDay = e.IsFullDay;
+                                        v.ThemeColor = e.ThemeColor;
+                                        v.IdLocation = e.IdLocation;
+                                        v.IdMeetR = e.IdMeetR;
+                                        v.UserId = e.UserId;
+                                        v.IdArea = e.IdArea;
 
-                                            //status = true;
+
+                                        dc.SaveChanges();
+
+                                        status = true;
 
 
-                                            //return new JsonResult(new { status = status });
-                                        }
-
-
+                                        return new JsonResult(new { status = status });
                                     }
-                                }
 
-                                
-                                
+                                }
+                                //else
+                                //{
+                                //    ViewBag.Message = "Error";
+                                //    status = true;
+                                //    return new JsonResult(new { status = status });
+
+                                //}
+
 
                             }
-                            dc.Events.Add(e);
+                            else
+                            {
+                                foreach (var item1 in eventLst)
+                                {
 
-                           
+                                    if (e.Start >= item1.Start)
+                                    {
+                                        if (e.End <= item1.End)
+                                        {
+                                            if (e.IdMeetR == item1.IdMeetR)
+                                            {
+                                                ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                                return View(e);
+
+                                                //status = true;
+
+
+                                                //return new JsonResult(new { status = status });
+                                            }
+
+
+                                        }
+                                    }
+
+
+
+
+                                }
+                                dc.Events.Add(e);
+
+                                dc.SaveChanges();
+
+                                status = true;
+
+
+                                return new JsonResult(new { status = status });
+
+                            }
+
 
                         }
-                        
-                        
+
+
+
                     }
-                    
 
-                   
                 }
-
             }
 
+            if (this.User.IsInRole("Admin") && this.User.IsInRole("SuperAdmin"))
+            {
+                if (e.EventID > 0)
+                {
+                    //Update the event
+                    var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                    if (v != null)
+                    {
+                        v.Subject = e.Subject;
+                        v.Start = e.Start;
+                        v.End = e.End;
+                        v.Description = e.Description;
+                        v.IsFullDay = e.IsFullDay;
+                        v.ThemeColor = e.ThemeColor;
+                        v.IdLocation = e.IdLocation;
+                        v.IdMeetR = e.IdMeetR;
+                        v.UserId = e.UserId;
+                        v.IdArea = e.IdArea;
+
+
+                        dc.SaveChanges();
+
+                        status = true;
+
+
+                        return new JsonResult(new { status = status });
+                    }
+
+
+                }
+
+                else
+                {
+                    foreach (var item1 in eventLst)
+                    {
+
+                        if (e.Start >= item1.Start)
+                        {
+                            if (e.End <= item1.End)
+                            {
+                                if (e.IdMeetR == item1.IdMeetR)
+                                {
+                                    ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                    return View(e);
+
+                                    //status = true;
+
+
+                                    //return new JsonResult(new { status = status });
+                                }
+
+
+                            }
+                        }
+
+
+
+
+                    }
+
+
+
+
+                }
+                dc.Events.Add(e);
+            }
 
             
+
             dc.SaveChanges();
 
             status = true;
@@ -207,6 +279,11 @@ namespace BoardRoomSystem.Controllers
             var rooms = dc.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
             return new JsonResult(rooms);
         }
+        public JsonResult txtArea(int id)
+        {
+            var areas = dc.AreasViewModels.ToList();
+            return new JsonResult(areas);
+        }
 
         [HttpPost]
         public ActionResult DeleteEvent(int eventID, Event e)
@@ -215,35 +292,50 @@ namespace BoardRoomSystem.Controllers
             eventLst = (from d in dc.Events
                         select d).ToList();
             var status = false;
-
             var claimsIdentity = User.Identity as ClaimsIdentity;
-            if (claimsIdentity != null)
+
+            if (this.User.IsInRole("User"))
             {
-                // the principal identity is a claims identity.
-                // now we need to find the NameIdentifier claim
-                var userIdClaim = claimsIdentity.Claims
-                    .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
-                if (userIdClaim != null)
+                if (claimsIdentity != null)
                 {
-                    var userIdValue = userIdClaim.Value;
+                    // the principal identity is a claims identity.
+                    // now we need to find the NameIdentifier claim
+                    var userIdClaim = claimsIdentity.Claims
+                        .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
 
-                    foreach (var itemss in eventLst)
+                    if (userIdClaim != null)
                     {
-                        if (e.EventID == itemss.EventID && itemss.UserId == userIdValue)
+                        var userIdValue = userIdClaim.Value;
+
+                        foreach (var itemss in eventLst)
                         {
-                            
-                            var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
-                            if (v != null)
+                            if (e.EventID == itemss.EventID && itemss.UserId == userIdValue)
                             {
-                                dc.Events.Remove(v);
-                                dc.SaveChanges();
-                                status = true;
+
+                                var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
+                                if (v != null)
+                                {
+                                    dc.Events.Remove(v);
+                                    dc.SaveChanges();
+                                    status = true;
+                                }
                             }
                         }
                     }
                 }
             }
+
+            if (this.User.IsInRole("Admin"))
+            {
+                var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
+                if (v != null)
+                {
+                    dc.Events.Remove(v);
+                    dc.SaveChanges();
+                    status = true;
+                }
+            }
+            
 
 
             return new JsonResult ( new { status = status } );
@@ -258,6 +350,11 @@ namespace BoardRoomSystem.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult AgendaView()
+        {
+            return View();
         }
     }
 }

@@ -19,7 +19,7 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class MeetingRoomsController : Controller
     {
         private readonly ApplicationDbContext dBContext;

@@ -12,7 +12,7 @@ using BoardRoomSystem.Areas.Identity.Data;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class LocationController : Controller
     {
         private readonly ApplicationDbContext dBContext;

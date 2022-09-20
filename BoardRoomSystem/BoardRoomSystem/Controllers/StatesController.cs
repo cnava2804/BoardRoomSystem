@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class StatesController : Controller
     {
         private readonly ApplicationDbContext dBContext;

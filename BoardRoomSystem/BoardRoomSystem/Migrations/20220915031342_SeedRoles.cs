@@ -8,6 +8,7 @@ namespace BoardRoomSystem.Migrations
     {
         private string UsuarioRoleId = Guid.NewGuid().ToString();
         private string AdminRoleId = Guid.NewGuid().ToString();
+       
 
         private string User1Id = Guid.NewGuid().ToString();
 

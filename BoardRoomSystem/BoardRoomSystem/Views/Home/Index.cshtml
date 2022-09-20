@@ -3,7 +3,7 @@
 }
 
 @{
-@using System.Security.Claims;
+    @using System.Security.Claims;
    var claimsIdentity = User.Identity as ClaimsIdentity;
    if (claimsIdentity != null)
    {
@@ -13,7 +13,7 @@
 
        if (userIdClaim != null) {
             var userIdValue = userIdClaim.Value;
-            <input type="hidden" id="hdUserID" value="@userIdValue.ToString()" />
+    <input type="hidden" id="hdUserID" value="@userIdValue.ToString()" />
        }
    }
 }
@@ -90,7 +90,6 @@
                         <select class="form-control" id="txtLocation">
                             <option>--Seleccionar Ubicación--</option>
                         </select>
-                        @*<input type="text" id="txtLocation" class="form-control" />*@
                     </div>
 
                     <div class="form-group">
@@ -98,7 +97,6 @@
                         <select class="form-control" id="txtRoom">
                             <option>--Seleccionar Sala--</option>
                         </select>
-                        @*<input type="text" id="txtRoom" class="form-control" />*@
                     </div>
 
                     <div class="form-group">
@@ -127,6 +125,12 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <textarea id="txtDescription" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Área de quién reserva la sala</label>
+                        <select class="form-control" id="txtArea">
+                            <option>--Seleccionar Área--</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Color de la etiqueta</label>
@@ -186,7 +190,7 @@
                 events = [];
                 $.ajax({
                     type: "GET",
-                    url: "/Home/GetRooms",
+                    url: "/Home/GetEvents",
                     success: function (data) {
                         $.each(data, function (i, v) {
                             events.push({
@@ -201,7 +205,9 @@
                                 end: v.End != null ? moment(v.End) : null,
                                 color: v.ThemeColor,
                                 allDay: v.IsFullDay,
-                                userID: v.Id
+                                userID: v.Id,
+                                areaID: v.IdArea,
+                                AreaName: v.NameArea
                             });
                         })
 
@@ -243,6 +249,9 @@
                         $('#myModal #pDetails').empty().html($description);
 
                         $description.append($('<p/>').html('<b>Sala: </b>' + calEvent.RoomName));
+                        $('#myModal #pDetails').empty().html($description);
+
+                        $description.append($('<p/>').html('<b>Área: </b>' + calEvent.AreaName));
                         $('#myModal #pDetails').empty().html($description);
 
                         $('#myModal').modal();
@@ -293,7 +302,8 @@
                             end: end,
                             allDay: false,
                             color: '',
-                            userID: $('#hdUserID').val()
+                            userID: $('#hdUserID').val(),
+                            areaID: 0,
                         };
                         openAddEditForm();
                         $('#calendar').fullCalendar('unselect');
@@ -310,7 +320,8 @@
                             Description: event.description,
                             ThemeColor: event.color,
                             IsFullDay: event.allDay,
-                            UserId: event.userID
+                            UserId: event.userID,
+                            IdArea: event.areaID
                         };
                         SaveEvent(data);
                     }
@@ -360,6 +371,7 @@
                     $('#txtSubject').val(selectedEvent.title);
                     $('#txtLocation').val(selectedEvent.locationId);
                     $('#txtRoom').val(selectedEvent.RoomId);
+                    $('#txtArea').val(selectedEvent.areaID);
                     $('#txtStart').val(selectedEvent.start.format('DD/MM/YYYY HH:mm A'));
                     $('#chkIsFullDay').prop("checked", selectedEvent.allDay || false);
                     $('#chkIsFullDay').change();
@@ -387,6 +399,10 @@
                     alert('Seleccione una Sala.');
                     return;
                 }
+                if ($('#txtArea').val() == null) {
+                    alert('Seleccione un Área.');
+                    return;
+                }
                 if ($('#txtStart').val().trim() == "") {
                     alert('Coloque una Fecha inicial.');
                     return;
@@ -409,6 +425,7 @@
                     Subject: $('#txtSubject').val().trim(),
                     IdLocation: $('#txtLocation').val().trim(),
                     IdMeetR: $('#txtRoom').val().trim(),
+                    IdArea: $('#txtArea').val().trim(),
                     Start: $('#txtStart').val().trim(),
                     End: $('#chkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
                     Description: $('#txtDescription').val(),
@@ -457,7 +474,7 @@
             $('.filter').on('change', function () {
                 $('#calender').fullCalendar('rerenderEvents');
             });
-
+            GetAreas();
         });
 
         function GetLocations() {
@@ -469,7 +486,18 @@
                     });
                 }
             });
-        }
+        };
+
+        function GetAreas() {
+            $.ajax({
+                url: '/Home/txtArea',
+                success: function (result) {
+                    $.each(result, function (i, data) {
+                        $('#txtArea').append('<Option value=' + data.idArea + '>' + data.nameArea + '</Option>');
+                    });
+                }
+            });
+        };
 
     </script>
 

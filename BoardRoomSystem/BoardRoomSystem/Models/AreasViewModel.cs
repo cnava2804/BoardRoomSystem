@@ -8,12 +8,12 @@ namespace BoardRoomSystem.Models
     public class AreasViewModel
     {
         [Key]
-        public int Area_Id { get; set; }
+        public int IdArea { get; set; }
 
         [Display(Name ="Nombre de Area")]
         [Column(TypeName ="nvarchar(50)")]
-        public string Area_Name { get; set; }
+        public string NameArea { get; set; }
+        public virtual ICollection<Event> Events { get; set; }
 
-        //public virtual ICollection<Reservations> Reservations { get; set; }
     }
 }

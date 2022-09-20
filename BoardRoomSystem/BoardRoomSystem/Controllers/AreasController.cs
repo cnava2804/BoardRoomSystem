@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace BoardRoomSystem.Controllers
 {
     //[Authorize(Policy = "RequireAdmin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class AreasController : Controller
     {
         private readonly ApplicationDbContext dBContext;
@@ -20,7 +20,7 @@ namespace BoardRoomSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = dBContext.AreasViewModels.Include(a => a.Area_Id);
+            var applicationDbContext = dBContext.AreasViewModels.Include(a => a.IdArea);
             return View(await dBContext.AreasViewModels.ToListAsync());
         }
 
@@ -31,7 +31,7 @@ namespace BoardRoomSystem.Controllers
                 return NotFound();
             }
 
-            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.Area_Id == Id);
+            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.IdArea == Id);
 
             if (areasViewModel == null)
             {
@@ -84,7 +84,7 @@ namespace BoardRoomSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, AreasViewModel areasViewModel)
         {
-            if (id != areasViewModel.Area_Id)
+            if (id != areasViewModel.IdArea)
             {
                 return NotFound();
             }
@@ -113,7 +113,7 @@ namespace BoardRoomSystem.Controllers
             {
                 return NotFound();
             }
-            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.Area_Id == id);
+            var areasViewModel = await dBContext.AreasViewModels.FirstOrDefaultAsync(a => a.IdArea == id);
 
             if (areasViewModel == null)
             {

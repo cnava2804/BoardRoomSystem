@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Agenda";
+}
+
+
+<h1 class="text-center">Sistema de Reservación de Salas</h1>
+<br />
+
+<label>Filtros</label>
+<div>
+
+    <div class="col-md-3">
+        <select class="form-control filter" id="loc_selector" name="loc_selector">
+            <option value='all'>Todas las Ubicaciones</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-control filter" id="room_selector" name="room_selector">
+            <option value='all'>Todas las Salas</option>
+        </select>
+    </div>
+</div>
+
+<input type="hidden" id="fc-event-content" class="fc-event-content" />
+
+<br />
+<br />
+<br />
+<div id="calender"></div>
+<br />
+
+
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
+<link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script src="~/js/locale-all.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+   
+    <script>
+        $(document).ready(function () {
+            var events = [];
+            var selectedEvent = null;
+            var initialLocaleCode = 'es';
+            FetchEventAndRenderCalendar();
+            function FetchEventAndRenderCalendar() {
+                events = [];
+                $.ajax({
+                    type: "GET",
+                    url: "/Home/GetEvents",
+                    success: function (data) {
+                        $.each(data, function (i, v) {
+                            events.push({
+                                eventID: v.EventID,
+                                title: v.Subject,
+                                locationId: v.IdLocation,
+                                locationName: v.NameLocation,
+                                RoomId: v.IdMeetR,
+                                RoomName: v.NameMeetR,
+                                description: v.Description,
+                                start: moment(v.Start),
+                                end: v.End != null ? moment(v.End) : null,
+                                color: v.ThemeColor,
+                                allDay: v.IsFullDay,
+                                userID: v.Id,
+                                areaID: v.IdArea,
+                                AreaName: v.NameArea
+                            });
+                        })
+
+                        GenerateCalender(events);
+                    },
+                    error: function (error) {
+                        alert('Error');
+                    }
+                });
+            };
+
+            function GenerateCalender(events) {
+                $('#calender').fullCalendar('destroy');
+                $('#calender').fullCalendar({
+                    contentHeight: 400,
+                    defaultDate: new Date(),
+                    timeFormat: 'h(:mm)a',
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'listDay, month, agendaDay'
+                    },
+                    defaultView: 'listDay',
+                    locale: initialLocaleCode,
+                    eventLimit: true,
+                    eventColor: '#378006',
+                    events: events,
+
+                    //eventRender: function(event, element, view) {
+                    //    if (view.name === "listDay") {
+                    //        element.find(".fc-event-content")
+                    //            .append("<b>Description</b>:" + event.locationName);
+                    //    }
+                    //},
+                    //eventRender: function(objEvent, element, view) {
+                    //    if (view.name === "listDay") { //or agendaWeek
+                    //        element.find(".fc-event-content")
+                    //            .append("<b>Other Info</b>:<br/>" + objEvent.locationName);
+                    //    }
+                    //},
+
+                    //eventRender: function(event, element) {
+                    //    element.find('.fc-list-item').append("<br/>" + event.description + event.RoomName);
+                    //},
+                    eventRender: function (objEvent, element, view) {
+                        if (view.name === "listDay") { //or agendaWeek
+                            element.find(".fc-list-item-title")
+                                .append("<b> Other Info</b>:<br/>" + objEvent.RoomName);
+                        }
+                    },
+
+                    //eventRender: function eventRender(event, element, view) {
+                    //var showTypes, showFacilities, showSearchTerms = true;
+                    //var types = $('#loc_selector').val();
+                    //var types2 = $('#room_selector').val();
+
+                    //    /* filters */
+
+                    //    if (types && types.length > 0) {
+                    //        if (types.trim().toLowerCase() == "all") {
+                    //            showTypes = true;
+                    //        }
+                    //        else {
+                    //            showTypes = types.indexOf(event.locationId) >= 0;
+                    //        }
+                    //    }
+                    //    if (types2 && types2.length > 0) {
+                    //        if (types2.trim().toLowerCase() == "all") {
+                    //            showTypes = true;
+                    //        }
+                    //        else {
+                    //            showTypes = types2.indexOf(event.RoomId) >= 0;
+                    //        }
+                    //    }
+
+                    //    return showTypes;
+                    //}, //end: eventRender
+
+                    selectable: false,
+                    select: function (start, end) {
+                        selectedEvent = {
+                            eventID: 0,
+                            title: '',
+                            locationId: 0,
+                            RoomId: 0,
+                            description: '',
+                            start: start,
+                            end: end,
+                            allDay: false,
+                            color: '',
+                            userID: $('#hdUserID').val()
+                        };
+                        openAddEditForm();
+                        $('#calendar').fullCalendar('unselect');
+                    },
+                    editable: false,
+                    eventDrop: function (event) {
+                        var data = {
+                            EventID: event.eventID,
+                            Subject: event.title,
+                            IdLocation: event.locationId,
+                            IdMeetR: event.RoomId,
+                            Start: event.start.format('DD/MM/YYYY HH:mm A'),
+                            End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm A') : null,
+                            Description: event.description,
+                            ThemeColor: event.color,
+                            IsFullDay: event.allDay,
+                            UserId: event.userID
+                        };
+                        SaveEvent(data);
+                    }
+                })
+            };
+            GetLocations();
+            $('#loc_selector').change(function () {
+                var id = $(this).val();
+                $('#room_selector').empty();
+                $('#room_selector').append('<option value="all">All Rooms</option>');
+                $.ajax({
+                    url: '/Home/room_selector?id=' + id,
+                    success: function (result) {
+                        $.each(result, function (i, data) {
+                            $('#room_selector').append('<Option value=' + data.idMeetR + '>' + data.nameMeetR + '</Option>');
+                        });
+                    }
+                });
+            });
+
+            $('.filter').on('change', function () {
+                $('#calender').fullCalendar('rerenderEvents');
+            });
+
+        });
+
+        function GetLocations() {
+            $.ajax({
+                url: '/Home/loc_selector',
+                success: function (result) {
+                    $.each(result, function (i, data) {
+                        $('#loc_selector').append('<Option value=' + data.idLocation + '>' + data.nameLocation + '</Option>');
+                    });
+                }
+            });
+        }
+
+    </script>
+
+}
+
+
+

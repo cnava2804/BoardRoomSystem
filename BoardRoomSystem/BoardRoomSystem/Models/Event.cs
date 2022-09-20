@@ -35,5 +35,10 @@ namespace BoardRoomSystem.Models
 
         [ForeignKey("UserId")]
         public ApplicationUser ApplicationUser { get; set; }
+
+        [Display(Name = "Area")]
+        public int IdArea { get; set; }
+        [ForeignKey("IdArea")]
+        public virtual AreasViewModel AreasViewModel { get; set; }
     }
 }

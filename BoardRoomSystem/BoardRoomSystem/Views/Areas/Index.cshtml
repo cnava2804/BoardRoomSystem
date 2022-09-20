@@ -27,7 +27,7 @@
         <thead class="table-dark">
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Area_Name)
+                    @Html.DisplayNameFor(model => model.NameArea)
                 </th>
                 <th></th>
             </tr>
@@ -37,10 +37,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Area_Name)
+                        @Html.DisplayFor(modelItem => item.NameArea)
                     </td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Area_Id" class="btn btn-sm btn-primary">Details</a>
+                        <a asp-action="Details" asp-route-id="@item.IdArea" class="btn btn-sm btn-primary">Details</a>
                     </td>
                 </tr>
             }
