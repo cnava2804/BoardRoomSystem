@@ -11,15 +11,6 @@
   @*<li class="active">Data</li>*@
 </ol>
 
-<div class="row search">
-   @* <div class="col-auto">
-        <input type="text" class="form-control-plaintext" id="txt-search" placeholder="Buscar..." />
-    </div>*@
-    @*<div class="col-auto">
-        <a class="btn btn-secondary" onclick="departament_search()" id="search-link"><i class="fas fa-search"></i></a>
-        <a asp-action="Create" class="btn btn-success"><i class="far fa-file"></i> Nuevo</a>
-    </div>*@
-</div>
 <div>
     <a asp-action="Create" class="btn btn-success"><i class="far fa-file"></i> Nuevo</a>
 </div>
@@ -42,9 +33,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Location.NameLocation)
                 </th>
-                <th>
+                @*<th>
                     @Html.DisplayNameFor(model => model.State.state_Name)
-                </th>
+                </th>*@
                 <th>
                     @Html.DisplayNameFor(model => model.ImagePath)
                 </th>
@@ -61,12 +52,12 @@
                     <td>@Html.DisplayFor(model => item.DescriptionMeetR)</td>
                     <td>@Html.DisplayFor(model => item.MaxNumbPeopleMeetR)</td>
                     <td>@Html.DisplayFor(model => item.Location.NameLocation)</td>
-                    <td>@Html.DisplayFor(model => item.State.state_Name)</td>
+                    @*<td>@Html.DisplayFor(model => item.State.state_Name)</td>*@
                     <td><img src="@item.ImagePath" height="100px;" width="150px;"/></td>
 
                     <td>
-                        <a asp-action="Edit" class="btn btn-warning btn-sm" asp-route-id="@item.IdMeetR"><i class="fas fa-edit"></i>Editar</a>
-                        <a asp-action="Details" class="btn btn-primary btn-sm" asp-route-id="@item.IdMeetR"><i class="far fa-file-alt"></i>Detalles</a>
+                        @*<a asp-action="Edit" class="btn btn-warning btn-sm" asp-route-id="@item.IdMeetR"><i class="fas fa-edit"></i> Editar</a>*@
+                        <a asp-action="Details" class="btn btn-primary btn-sm" asp-route-id="@item.IdMeetR"><i class="far fa-file-alt"></i> Detalles</a>
                     </td>
                 </tr>
             }

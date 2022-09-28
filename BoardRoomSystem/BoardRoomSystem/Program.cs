@@ -5,12 +5,14 @@ using BoardRoomSystem.Core.Repositories;
 using BoardRoomSystem.Repositorio;
 using BoardRoomSystem.Repositories;
 using BoardRoomSystem.Core;
+using BoardRoomSystem.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddSignalR();
 //Requerimientos de contraseñas 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
     options.SignIn.RequireConfirmedAccount = false;
@@ -57,7 +59,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapRazorPages();
-
+app.MapHub<EventHub>("/eventHub");
 app.Run();
 
 

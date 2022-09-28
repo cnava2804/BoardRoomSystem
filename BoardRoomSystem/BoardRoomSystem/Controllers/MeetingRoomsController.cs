@@ -19,7 +19,6 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace BoardRoomSystem.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
     public class MeetingRoomsController : Controller
     {
         private readonly ApplicationDbContext dBContext;
@@ -33,12 +32,33 @@ namespace BoardRoomSystem.Controllers
             this.dBContext = dBContext;
             this.environment = environment;
         }
-     
+        [Authorize(Roles = "SuperAdmin")]
+
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = dBContext.MeetingRooms.Include(d => d.State).Include(l => l.Location);
             return View(await applicationDbContext.ToListAsync());
         }
+
+        [Authorize(Roles = "User, Admin")]
+
+        public async Task<IActionResult> RoomsView()
+        {
+            //List<Event> eventLst;
+            //eventLst = (from d in dBContext.Events
+            //            select d).ToList();
+            //foreach(var item2 in eventLst)
+            //{
+            //    if (item2.EventID > 0 )
+            //    {
+
+            //    }
+            //}
+            var applicationDbContext = dBContext.MeetingRooms.Include(d => d.State).Include(l => l.Location);
+            return View(await applicationDbContext.ToListAsync());
+        }
+
+        [Authorize(Roles = "SuperAdmin")]
 
         public JsonResult LocationJr()
         {
@@ -46,12 +66,14 @@ namespace BoardRoomSystem.Controllers
             return new JsonResult(lct);
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         public JsonResult meetingRJr(int id)
         {
             var meetR = dBContext.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
             return new JsonResult(meetR);
         }
 
+        [Authorize(Roles = "User, Admin, SuperAdmin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -73,6 +95,7 @@ namespace BoardRoomSystem.Controllers
 
         }
 
+        [Authorize(Roles = "SuperAdmin")]
         //Crear por medio de Vista
         [HttpGet]
         public IActionResult Create()
@@ -81,10 +104,10 @@ namespace BoardRoomSystem.Controllers
             ViewData["IdLocation"] = new SelectList(dBContext.Locations, "IdLocation", "NameLocation");
             return View(new ImageCreateModel());
         }
-
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdMeetR,NameMeetR,DescriptionMeetR,MaxNumbPeopleMeetR,ImagePath,State_Id,IdLocation")] ImageCreateModel model)
+        public async Task<IActionResult> Create([Bind("IdMeetR,NameMeetR,DescriptionMeetR,MaxNumbPeopleMeetR, MinNumbPeopleMeetR, ThemeColorMeetR, ImagePath,State_Id,IdLocation")] ImageCreateModel model)
         {
 
             if (ModelState.IsValid)
@@ -100,6 +123,8 @@ namespace BoardRoomSystem.Controllers
                     NameMeetR = model.NameMeetR,
                     DescriptionMeetR = model.DescriptionMeetR,
                     MaxNumbPeopleMeetR = model.MaxNumbPeopleMeetR,
+                    MinNumbPeopleMeetR = model.MinNumbPeopleMeetR,
+                    ThemeColorMeetR = model.ThemeColorMeetR,
                     ImagePath = filePath,
                     IdLocation = loc,
                     State_Id = states
@@ -114,22 +139,14 @@ namespace BoardRoomSystem.Controllers
 
             return View(model);
         }
-
+        [Authorize(Roles = "SuperAdmin")]
         public void UploadFile(IFormFile file, string path)
         {
             FileStream stream = new FileStream(path, FileMode.Create);
             file.CopyTo(stream);
         }
-        //private string GetUniqueFileName(string fileName)
-        //{
-        //    fileName = Path.GetFileName(fileName);
-        //    return Path.GetFileNameWithoutExtension(fileName)
-        //              + "_"
-        //              + Guid.NewGuid().ToString().Substring(0, 4)
-        //              + Path.GetExtension(fileName);
-        //}
 
-
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -148,10 +165,10 @@ namespace BoardRoomSystem.Controllers
 
             return View(meetingRoom);
         }
-
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdMeetR,NameMeetR,DescriptionMeetR,MaxNumbPeopleMeetR,ImagePath,State_Id,IdLocation")] MeetingRoom meetingR)
+        public async Task<IActionResult> Edit(int id, [Bind("IdMeetR,NameMeetR,DescriptionMeetR,MaxNumbPeopleMeetR, MinNumbPeopleMeetR, ThemeColorMeetR, ImagePath,State_Id,IdLocation")] MeetingRoom meetingR)
         {
             if (id != meetingR.IdMeetR)
             {
@@ -177,7 +194,7 @@ namespace BoardRoomSystem.Controllers
 
             return View(meetingR);
         }
-
+        [Authorize(Roles = "SuperAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -197,7 +214,7 @@ namespace BoardRoomSystem.Controllers
             return View(meetingR);
 
         }
-
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)

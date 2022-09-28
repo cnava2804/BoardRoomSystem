@@ -10,6 +10,9 @@
     @*<link rel="stylesheet" href="~/BoardRoomSystem.styles.css" asp-append-version="true" />*@
     <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/js/modernizr-2.6.2.js"></script>
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    
 </head>
 <body>
     <header>
@@ -33,7 +36,7 @@
                 <partial name="_LoginPartial"/>
             </div>
         </nav>*@
-        <div class="navbar navbar-default navbar-static-top">
+        <div class="navbar navbar-default navbar-static-top" style="background-color: #fff;color:#fff" role="navigation">
             <div class="container">
 
                 <div class="navbar-header">
@@ -44,41 +47,83 @@
                     </button>
                     
                 </div>
-                <div class="navbar-collapse collapse">
-                    @*<ul class="nav navbar-nav">
-                        @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                        @Html.ActionLink("Salas", "Index", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
-                        @Html.ActionLink("Ubicaciones", "Index", "Location", new { area = "" }, new { @class = "navbar-brand" })
-                        @Html.ActionLink("Estados", "Index", "States", new { area = "" }, new { @class = "navbar-brand" })
-                        @Html.ActionLink("Areas", "Index", "Areas", new { area = "" }, new { @class = "navbar-brand" })
-                        
-                    </ul>*@
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Salas", "Index", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Ubicaciones", "Index", "Location", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Estados", "Index", "States", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Areas", "Index", "Areas", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                    <ul class="nav navbar-nav">
-                        @Html.ActionLink("Usuarios", "Index", "User", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
-                     <ul class="nav navbar-nav">
-                        @Html.ActionLink("Agenda", "AgendaView", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                    </ul>
+                @if (this.User.IsInRole("User"))
+                {
+                    <div class="navbar-collapse collapse">
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <partial name="_LoginPartial" />
-                    </ul>
-                </div>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Salas", "RoomsView", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Agenda", "AgendaView", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="_LoginPartial" />
+                        </ul>
+                    </div>
+                }
+
+                @if (this.User.IsInRole("Admin"))
+                {
+                    <div class="navbar-collapse collapse">
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Salas", "RoomsView", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Agenda", "AgendaView", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="_LoginPartial" />
+                        </ul>
+                    </div>
+                }
+
+                @if (this.User.IsInRole("SuperAdmin"))
+                {
+                    <div class="navbar-collapse collapse">
+
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Calendario", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Salas", "Index", "MeetingRooms", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Ubicaciones", "Index", "Location", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Estados", "Index", "States", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Areas", "Index", "Areas", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Usuarios", "Index", "User", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+                        <ul class="nav navbar-nav">
+                            @Html.ActionLink("Agenda", "AgendaView", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                        </ul>
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <partial name="_LoginPartial" />
+                        </ul>
+                    </div>
+                }
+              
             </div>
            
         </div>
@@ -101,7 +146,7 @@
             &copy; 2022 - BoardRoomSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>*@
-
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/jquery-1.10.2.min.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@

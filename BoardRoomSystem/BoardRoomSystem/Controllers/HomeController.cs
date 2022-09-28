@@ -15,6 +15,8 @@ using BoardRoomSystem.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace BoardRoomSystem.Controllers
 {
@@ -36,21 +38,6 @@ namespace BoardRoomSystem.Controllers
             return View();
         }
 
-        //public JsonResult GetEvents()
-        //{
-        //    var query = (from Event in dc.Events
-        //                 join MeetingRoom in dc.MeetingRooms on Event.MeetingRoom.IdMeetR equals MeetingRoom.IdMeetR
-        //                 select new
-        //                 {
-        //                     meetRId = MeetingRoom.IdMeetR,
-        //                     meetRName = MeetingRoom.NameMeetR
-        //                 }).ToList();
-
-        //    var events = dc.Events.ToList();
-        //    return Json(events, new System.Text.Json.JsonSerializerOptions { });
-
-        //}
-
         public JsonResult GetEvents()
         {
 
@@ -58,7 +45,7 @@ namespace BoardRoomSystem.Controllers
                           join B in dc.MeetingRooms on A.MeetingRoom.IdMeetR equals B.IdMeetR
                           join C in dc.Users on A.ApplicationUser.Id equals C.Id
                           join D in dc.AreasViewModels on A.AreasViewModel.IdArea equals D.IdArea
-                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.ThemeColor, B.IdMeetR, B.NameMeetR, B.IdLocation, B.Location.NameLocation, C.Id, D.IdArea}).ToList();
+                          select new {A.EventID, A.Subject, A.Start, A.End, A.Description, A.IsFullDay, A.NumOfPeople, B.IdMeetR, B.NameMeetR, B.ThemeColorMeetR, B.IdLocation, B.Location.NameLocation, C.Id, D.IdArea, D.NameArea}).ToList();
 
            
 
@@ -74,6 +61,109 @@ namespace BoardRoomSystem.Controllers
             List<Event> eventLst;
             eventLst = (from d in dc.Events
                         select d).ToList();
+            List<MeetingRoom> meetRLst;
+            meetRLst = (from d in dc.MeetingRooms
+                        select d).ToList();
+
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+
+            if (this.User.IsInRole("User") || this.User.IsInRole("Admin") || this.User.IsInRole("SuperAdmin"))
+            {
+                if (claimsIdentity != null)
+                {
+                    // the principal identity is a claims identity.
+                    // now we need to find the NameIdentifier claim
+                    var userIdClaim = claimsIdentity.Claims
+                        .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+                    if (userIdClaim != null)
+                    {
+                        var userIdValue = userIdClaim.Value;
+
+                        foreach (var itemss in eventLst)
+                        {
+                           
+                            foreach (var item2 in meetRLst)
+                            {
+                                
+                                foreach (var item1 in eventLst)
+                                {
+                                    if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR && e.IdMeetR == item1.IdMeetR)
+                                    {
+                                        //ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
+                                        ViewBag.Message = true;
+                                        return View(e);
+                                    }
+
+                                    if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR && e.IdMeetR == item1.IdMeetR)
+                                    {
+                                        //ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
+                                        ViewBag.Message = String.Format("Lo sentimos, el número de personas es demaciado bajo para la sala.");
+                                        return View(e);
+                                    }
+
+                                    if (e.Start >= item1.Start)
+                                    {
+                                        if (e.End <= item1.End)
+                                        {
+                                            if (e.IdMeetR == item1.IdMeetR)
+                                            {
+                                                ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                                //return View(e);
+
+                                                status = true;
+
+
+                                                return new JsonResult(new { status = status });
+                                            }
+
+
+                                        }
+                                    }
+
+
+
+
+                                }
+
+                            }
+
+
+
+                        }
+
+
+
+                    }
+
+                }
+            }
+
+            
+
+            dc.Events.Add(e);
+
+            dc.SaveChanges();
+
+            status = true;
+
+
+            return new JsonResult ( new { status = status } );
+
+            
+        }
+
+        [HttpPost]
+        public ActionResult SaveEventEd(Event e)
+        {
+            var status = false;
+            List<Event> eventLst;
+            eventLst = (from d in dc.Events
+                        select d).ToList();
+            List<MeetingRoom> meetRLst;
+            meetRLst = (from d in dc.MeetingRooms
+                        select d).ToList();
+
             var claimsIdentity = User.Identity as ClaimsIdentity;
 
             if (this.User.IsInRole("User"))
@@ -89,85 +179,77 @@ namespace BoardRoomSystem.Controllers
                     {
                         var userIdValue = userIdClaim.Value;
 
-                        foreach (var itemss in eventLst)
+                        if (userIdValue == e.UserId)
                         {
-                            if (e.EventID > 0)
+                            foreach (var item1 in eventLst)
                             {
-                                if (userIdValue == e.UserId)
+                                if (e.Start >= item1.Start)
                                 {
-                                    //Update the event
-                                    var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                                    if (v != null)
+                                    if (e.End <= item1.End)
                                     {
-                                        v.Subject = e.Subject;
-                                        v.Start = e.Start;
-                                        v.End = e.End;
-                                        v.Description = e.Description;
-                                        v.IsFullDay = e.IsFullDay;
-                                        v.ThemeColor = e.ThemeColor;
-                                        v.IdLocation = e.IdLocation;
-                                        v.IdMeetR = e.IdMeetR;
-                                        v.UserId = e.UserId;
-                                        v.IdArea = e.IdArea;
-
-
-                                        dc.SaveChanges();
-
-                                        status = true;
-
-
-                                        return new JsonResult(new { status = status });
-                                    }
-
-                                }
-                                //else
-                                //{
-                                //    ViewBag.Message = "Error";
-                                //    status = true;
-                                //    return new JsonResult(new { status = status });
-
-                                //}
-
-
-                            }
-                            else
-                            {
-                                foreach (var item1 in eventLst)
-                                {
-
-                                    if (e.Start >= item1.Start)
-                                    {
-                                        if (e.End <= item1.End)
+                                        if (e.IdMeetR == item1.IdMeetR)
                                         {
-                                            if (e.IdMeetR == item1.IdMeetR)
+                                            if (e.EventID == item1.EventID)
+                                            {
+                                                continue;
+                                            }
+                                            else
                                             {
                                                 ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                                return View(e);
+                                                //return View(e);
 
-                                                //status = true;
+                                                status = true;
 
 
-                                                //return new JsonResult(new { status = status });
+                                                return new JsonResult(new { status = status }, e);
                                             }
-
-
                                         }
+
+
                                     }
-
-
-
-
                                 }
-                                dc.Events.Add(e);
-
-                                dc.SaveChanges();
-
-                                status = true;
 
 
-                                return new JsonResult(new { status = status });
+
 
                             }
+
+                            foreach (var item2 in meetRLst)
+                            {
+                                if (e.NumOfPeople > item2.MaxNumbPeopleMeetR)
+                                {
+                                    ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                    status = true;
+
+                                    return new JsonResult(new { status = status });
+                                }
+                                //Update the event
+                                var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                                if (v != null)
+                                {
+                                    v.Subject = e.Subject;
+                                    v.Start = e.Start;
+                                    v.End = e.End;
+                                    v.Description = e.Description;
+                                    v.IsFullDay = e.IsFullDay;
+                                    v.NumOfPeople = e.NumOfPeople;
+                                    v.IdLocation = e.IdLocation;
+                                    v.IdMeetR = e.IdMeetR;
+                                    v.UserId = e.UserId;
+                                    v.IdArea = e.IdArea;
+
+
+                                    dc.SaveChanges();
+
+                                    status = true;
+
+
+                                    return new JsonResult(new { status = status });
+
+                                }
+                            }
+
+
 
 
                         }
@@ -179,41 +261,14 @@ namespace BoardRoomSystem.Controllers
                 }
             }
 
-            if (this.User.IsInRole("Admin") && this.User.IsInRole("SuperAdmin"))
+            if (this.User.IsInRole("Admin") || this.User.IsInRole("SuperAdmin"))
             {
-                if (e.EventID > 0)
+                foreach (var item2 in meetRLst)
                 {
-                    //Update the event
-                    var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                    if (v != null)
-                    {
-                        v.Subject = e.Subject;
-                        v.Start = e.Start;
-                        v.End = e.End;
-                        v.Description = e.Description;
-                        v.IsFullDay = e.IsFullDay;
-                        v.ThemeColor = e.ThemeColor;
-                        v.IdLocation = e.IdLocation;
-                        v.IdMeetR = e.IdMeetR;
-                        v.UserId = e.UserId;
-                        v.IdArea = e.IdArea;
 
-
-                        dc.SaveChanges();
-
-                        status = true;
-
-
-                        return new JsonResult(new { status = status });
-                    }
-
-
-                }
-
-                else
-                {
                     foreach (var item1 in eventLst)
                     {
+                        
 
                         if (e.Start >= item1.Start)
                         {
@@ -221,39 +276,80 @@ namespace BoardRoomSystem.Controllers
                             {
                                 if (e.IdMeetR == item1.IdMeetR)
                                 {
-                                    ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                    return View(e);
+                                    if (e.EventID == item1.EventID)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                        //return View(e);
 
-                                    //status = true;
+                                        status = true;
 
 
-                                    //return new JsonResult(new { status = status });
+                                        return new JsonResult(new { status = status }, e);
+                                    }
+
                                 }
-
+                               
 
                             }
                         }
 
+                        
 
+                    }
+                    if (e.NumOfPeople > item2.MaxNumbPeopleMeetR)
+                    {
+                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto.";
+                        //return View(e);
+                        status = true;
+
+
+                        return new JsonResult(e, new { status = status });
+                    }
+
+                    if (e.EventID > 0)
+                    {
+                        //Update the event
+                        var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                        if (v != null)
+                        {
+                            v.Subject = e.Subject;
+                            v.Start = e.Start;
+                            v.End = e.End;
+                            v.Description = e.Description;
+                            v.IsFullDay = e.IsFullDay;
+                            v.NumOfPeople = e.NumOfPeople;
+                            v.IdLocation = e.IdLocation;
+                            v.IdMeetR = e.IdMeetR;
+                            v.UserId = e.UserId;
+                            v.IdArea = e.IdArea;
+
+
+                            dc.SaveChanges();
+
+                            status = true;
+
+
+                            return new JsonResult(new { status = status });
+                        }
 
 
                     }
 
-
-
-
                 }
-                dc.Events.Add(e);
+
             }
 
-            
 
             dc.SaveChanges();
 
             status = true;
 
 
-            return new JsonResult ( new { status = status } );
+            return new JsonResult(new { status = status });
         }
 
         public JsonResult txtLocation()
@@ -263,6 +359,18 @@ namespace BoardRoomSystem.Controllers
         }
 
         public JsonResult txtRoom(int id)
+        {
+            var rooms = dc.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
+            return new JsonResult(rooms);
+        }
+
+        public JsonResult txtLocationEd()
+        {
+            var locs = dc.Locations.ToList();
+            return new JsonResult(locs);
+        }
+
+        public JsonResult txtRoomEd(int id)
         {
             var rooms = dc.MeetingRooms.Where(m => m.Location.IdLocation == id).ToList();
             return new JsonResult(rooms);
@@ -321,11 +429,12 @@ namespace BoardRoomSystem.Controllers
                                 }
                             }
                         }
+                        
                     }
                 }
             }
 
-            if (this.User.IsInRole("Admin"))
+            if (this.User.IsInRole("Admin") || this.User.IsInRole("SuperAdmin"))
             {
                 var v = dc.Events.Where(a => a.EventID == eventID).FirstOrDefault();
                 if (v != null)

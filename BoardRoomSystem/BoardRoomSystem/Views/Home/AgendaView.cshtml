@@ -30,11 +30,16 @@
 <div id="calender"></div>
 <br />
 
+@model BoardRoomSystem.Hubs.EventHub;
 
+
+<link href="~/css/site.css" rel="stylesheet" />
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css" rel="stylesheet" />
 <link href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css" rel="stylesheet" media="print" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 @section Scripts{
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
     <script src="~/js/locale-all.js"></script>
@@ -63,8 +68,9 @@
                                 description: v.Description,
                                 start: moment(v.Start),
                                 end: v.End != null ? moment(v.End) : null,
-                                color: v.ThemeColor,
+                                color: v.ThemeColorMeetR,
                                 allDay: v.IsFullDay,
+                                numOfPeople: v.NumOfPeople,
                                 userID: v.Id,
                                 areaID: v.IdArea,
                                 AreaName: v.NameArea
@@ -96,55 +102,59 @@
                     eventColor: '#378006',
                     events: events,
 
-                    //eventRender: function(event, element, view) {
-                    //    if (view.name === "listDay") {
-                    //        element.find(".fc-event-content")
-                    //            .append("<b>Description</b>:" + event.locationName);
-                    //    }
-                    //},
-                    //eventRender: function(objEvent, element, view) {
-                    //    if (view.name === "listDay") { //or agendaWeek
-                    //        element.find(".fc-event-content")
-                    //            .append("<b>Other Info</b>:<br/>" + objEvent.locationName);
-                    //    }
-                    //},
 
-                    //eventRender: function(event, element) {
-                    //    element.find('.fc-list-item').append("<br/>" + event.description + event.RoomName);
-                    //},
-                    eventRender: function (objEvent, element, view) {
+
+                    eventRender: function eventRender(objEvent, element, view) {
                         if (view.name === "listDay") { //or agendaWeek
                             element.find(".fc-list-item-title")
-                                .append("<b> Other Info</b>:<br/>" + objEvent.RoomName);
+                                .append(
+                                    "<br/><b> Descripción: </b>" + objEvent.description +
+                                    "<br/><b> Ubicación de la Reunión: </b>" + objEvent.locationName +
+                                    "<br/><b> Sala: </b>" + objEvent.RoomName +
+                                    "<br/> <b> Área quien reserva la sala: </b>" + objEvent.AreaName
+                                );
                         }
+                        if (view.name === "agendaDay") { //or agendaWeek
+                            element.find(".fc-content")
+                                .append(
+                                    "<br/><b> Descripción: </b>" + objEvent.description +
+                                    "<br/><b> Ubicación de la Reunión: </b>" + objEvent.locationName +
+                                    "<br/><b> Sala: </b>" + objEvent.RoomName +
+                                    "<br/> <b> Área quien reserva la sala: </b>" + objEvent.AreaName
+                                );
+                        }
+
+                         var showTypes, showFacilities, showSearchTerms = true;
+                         var types = $('#loc_selector').val();
+                         var types2 = $('#room_selector').val();
+
+                        /* filters */
+
+                        if (types && types.length > 0) {
+                            if (types.trim().toLowerCase() == "all") {
+
+                                showTypes = true;
+                            }
+                            else {
+                                showTypes = types.indexOf(objEvent.locationId) >= 0;
+                            }
+                        }
+                        if (types2 && types2.length > 0) {
+                            if (types2.trim().toLowerCase() == "all") {
+                                showTypes = true;
+                            }
+                            else {
+                                
+                                showTypes = types2.indexOf(objEvent.RoomId) >= 0;
+
+
+                            }
+                            
+                        }
+
+                        return showTypes;
+
                     },
-
-                    //eventRender: function eventRender(event, element, view) {
-                    //var showTypes, showFacilities, showSearchTerms = true;
-                    //var types = $('#loc_selector').val();
-                    //var types2 = $('#room_selector').val();
-
-                    //    /* filters */
-
-                    //    if (types && types.length > 0) {
-                    //        if (types.trim().toLowerCase() == "all") {
-                    //            showTypes = true;
-                    //        }
-                    //        else {
-                    //            showTypes = types.indexOf(event.locationId) >= 0;
-                    //        }
-                    //    }
-                    //    if (types2 && types2.length > 0) {
-                    //        if (types2.trim().toLowerCase() == "all") {
-                    //            showTypes = true;
-                    //        }
-                    //        else {
-                    //            showTypes = types2.indexOf(event.RoomId) >= 0;
-                    //        }
-                    //    }
-
-                    //    return showTypes;
-                    //}, //end: eventRender
 
                     selectable: false,
                     select: function (start, end) {
@@ -157,8 +167,9 @@
                             start: start,
                             end: end,
                             allDay: false,
-                            color: '',
-                            userID: $('#hdUserID').val()
+                            numOfPeople: 0,
+                            userID: $('#hdUserID').val(),
+                            areaID: 0
                         };
                         openAddEditForm();
                         $('#calendar').fullCalendar('unselect');
@@ -173,9 +184,10 @@
                             Start: event.start.format('DD/MM/YYYY HH:mm A'),
                             End: event.end != null ? event.end.format('DD/MM/YYYY HH:mm A') : null,
                             Description: event.description,
-                            ThemeColor: event.color,
                             IsFullDay: event.allDay,
-                            UserId: event.userID
+                            NumOfPeople: event.numOfPeople,
+                            UserId: event.userID,
+                            IdArea: event.areaID
                         };
                         SaveEvent(data);
                     }

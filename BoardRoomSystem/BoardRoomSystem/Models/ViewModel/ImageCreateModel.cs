@@ -19,6 +19,10 @@ namespace BoardRoomSystem.Models.ViewModel
         public string DescriptionMeetR { get; set; }
         [Display(Name = "Capacidad máxima de personas")]
         public int MaxNumbPeopleMeetR { get; set; }
+        [Display(Name = "Capacidad mínima de personas")]
+        public int MinNumbPeopleMeetR { get; set; }
+
+        public string ThemeColorMeetR { get; set; }
 
         [Required(ErrorMessage = "Elija una imagen")]
         [Display(Name = "Imagen")]

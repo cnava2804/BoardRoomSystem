@@ -16,3 +16,9 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.fc-scroller
+{
+    overflow: hidden auto;
+    height: 800px;
+}

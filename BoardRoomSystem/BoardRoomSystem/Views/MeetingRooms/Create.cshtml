@@ -15,22 +15,6 @@
 </ol>
 <hr />
 
-@*<script>
-    $(document).ready(function() {
-        GetLocation();
-    });
-    function GetLocation() {
-        $.ajax({
-            url: '/MeetingRooms/LocationJr',
-            success: function(result) {
-                $.each(result, function(i, data) {
-                    $('#Location').append('<Option value=' + data.id + '>' + data.name + '</Option>');
-                });
-            }
-        });
-    };
-</script>*@
-
 <div class="row">
     <div class="col-md-4">
         <form method="post" asp-action="Create" enctype="multipart/form-data" asp-controller="MeetingRooms">
@@ -51,6 +35,11 @@
                 <span asp-validation-for="MaxNumbPeopleMeetR" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="MinNumbPeopleMeetR" class="control-label"></label>
+                <input asp-for="MinNumbPeopleMeetR" class="form-control" />
+                <span asp-validation-for="MinNumbPeopleMeetR" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="State_Id" class="control-label"></label>
                 <select asp-for="State_Id" class="form-control" asp-items="ViewBag.State_Id">
                     <option>Seleccionar Estado</option>
@@ -63,15 +52,12 @@
                 </select>
             </div>
 
-            @*<div class="form-group">
-                <label asp-for="CoverPhoto" class="control-label"></label>
-                <div class="custom-file">
-                    <input asp-for="CoverPhoto" class="custom-file-input" id="customFile" />
-                    <label class="custom-file-label" for="customFile">Examinar</label>
-                </div>
-                
-                <span asp-validation-for="CoverPhoto" class="text-danger"></span>
-            </div>*@
+            <div class="form-group">
+                <label asp-for="ThemeColorMeetR" class="control-label"></label>
+                <input asp-for="ThemeColorMeetR" class="form-control" />
+                <span asp-validation-for="ThemeColorMeetR" class="text-danger"></span>
+            </div>
+
 
             <div class="form-group">
                 <label asp-for="ImagePath"></label>

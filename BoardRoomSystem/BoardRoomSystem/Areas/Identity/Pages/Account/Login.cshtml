@@ -6,70 +6,65 @@
     Layout = null;
 }
 
-@*<h1>@ViewData["Title"]</h1>*@
 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Design by foolishdeveloper.com -->
+    <meta charset="utf-8" />
+
     <title>Inicio de Sesión</title>
- 
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <link href="~/css/login.css" rel="stylesheet" />
-    <!--Stylesheet-->
+
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a81368914c.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
 
 </head>
 <body>
-    <div class="background">
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-    <form id="account" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <h3>Inicio de Sesión</h3>
-
-        <div class="form-floating">
-            <label asp-for="Input.Email" class="form-label"></label>
-            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" id="username" />
-            
-            <span asp-validation-for="Input.Email" class="text-danger"></span>
-        </div>  
-        <div class="form-floating">
-            <label asp-for="Input.Password" class="form-label"></label>
-            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" id="password" />
-            
-            <span asp-validation-for="Input.Password" class="text-danger"></span>
+    
+    <img class="wave" src="/img/wavemont.svg">
+    <div class="container">
+        <div class="img">
+            <img src="/img/undraw_calendar_re_ki49.svg">
         </div>
-        @*<div>
-            <div class="checkbox">
-                <label asp-for="Input.RememberMe" class="form-label">
-                    <input class="form-check-input" asp-for="Input.RememberMe" />
-                    @Html.DisplayNameFor(m => m.Input.RememberMe)
-                </label>
-            </div>
-        </div>*@
-
-      
-        <button type="submit">Entrar</button>
-        
-
-        @*<label for="username">Username</label>
-        <input type="text" placeholder="Email or Phone" id="username">
-
-        <label for="password">Password</label>
-        <input type="password" placeholder="Password" id="password">*@
-
-        @*<button>Log In</button>
-        <div class="social">
-          <div class="go"><i class="fab fa-google"></i>  Google</div>
-          <div class="fb"><i class="fab fa-facebook"></i>  Facebook</div>
-        </div>*@
-    </form>
+        <div class="login-content">
+            <form id="account" method="post">
+                <img src="/img/undraw_pic_profile_hi2s.svg"/>
+                <h2 class="title">Bienvenido</h2>
+                <div class="input-div one">
+                    <div class="i">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Correo</h5>
+                        <input asp-for="Input.Email" type="text" class="input">
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="input-div pass">
+                    <div class="i">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="div">
+                        <h5>Contraseña</h5>
+                        <input asp-for="Input.Password" type="password" class="input">
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                </div>
+                @*<a href="#">Forgot Password?</a>*@
+                <br />
+                <input type="submit" class="btn" value="Entrar">
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript" src="/js/main.js"></script>
+    
+    
 
     @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
 }
 </body>

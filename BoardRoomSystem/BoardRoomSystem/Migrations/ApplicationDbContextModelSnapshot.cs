@@ -137,13 +137,13 @@ namespace BoardRoomSystem.Migrations
                     b.Property<bool>("IsFullDay")
                         .HasColumnType("bit");
 
+                    b.Property<int>("NumOfPeople")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Subject")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ThemeColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -198,11 +198,17 @@ namespace BoardRoomSystem.Migrations
                     b.Property<int>("MaxNumbPeopleMeetR")
                         .HasColumnType("int");
 
+                    b.Property<int>("MinNumbPeopleMeetR")
+                        .HasColumnType("int");
+
                     b.Property<string>("NameMeetR")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("State_Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("ThemeColorMeetR")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("IdMeetR");
 

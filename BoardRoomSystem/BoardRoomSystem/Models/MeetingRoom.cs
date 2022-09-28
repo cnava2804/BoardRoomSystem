@@ -18,10 +18,16 @@ namespace BoardRoomSystem.Models
         public string DescriptionMeetR { get; set; }
         [Display(Name = "Máximo de personas")]
         public int MaxNumbPeopleMeetR { get; set; }
+        [Display(Name = "Mínimo de personas")]
+        public int MinNumbPeopleMeetR { get; set; }
         [Display(Name = "Imagen")]
         public string ImagePath { get; set; }
         [Display(Name = "Ubicación")]
+
         public int IdLocation { get; set; }
+
+        [Display(Name = "Color")]
+        public string ThemeColorMeetR { get; set; }
 
         [ForeignKey("IdLocation")]
         public virtual Location Location { get; set; }

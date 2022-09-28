@@ -1,0 +1,55 @@
+﻿@model BoardRoomSystem.Models.MeetingRoom
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Detalles de Sala</h2>
+
+<ol class="breadcrumb">
+    <li><a asp-action="Index" asp-controller="Home">Home</a></li>
+    <li><a asp-action="Index" asp-controller="MeetingRooms">Salas</a></li>
+    <li><label>Detalles</label></li>
+    @*<li class="active">Data</li>*@
+</ol>
+
+<div>
+    @*<h4>Sala</h4>*@
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.NameMeetR)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NameMeetR)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DescriptionMeetR)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DescriptionMeetR)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Location.IdLocation)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Location.NameLocation)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MinNumbPeopleMeetR)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MinNumbPeopleMeetR)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.MaxNumbPeopleMeetR)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.MaxNumbPeopleMeetR)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-warning">Regresar</a>
+</div>
