@@ -75,58 +75,50 @@ namespace BoardRoomSystem.Controllers
                     // now we need to find the NameIdentifier claim
                     var userIdClaim = claimsIdentity.Claims
                         .FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
+                    
+                    
                     if (userIdClaim != null)
                     {
                         var userIdValue = userIdClaim.Value;
 
-                        foreach (var itemss in eventLst)
+                        foreach (var item2 in meetRLst)
                         {
-                           
-                            foreach (var item2 in meetRLst)
+                            if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                             {
+                                ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
                                 
-                                foreach (var item1 in eventLst)
+                                return View(e);
+                            }
+
+                            if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
+                            {
+                                ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
+                                return View(e);
+                            }
+                        }
+
+                        foreach (var item1 in eventLst)
+                        {
+
+                            if (e.Start >= item1.Start)
+                            {
+                                if (e.End <= item1.End || item1.IsFullDay)
                                 {
-                                    if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR && e.IdMeetR == item1.IdMeetR)
+                                    if (e.IdMeetR == item1.IdMeetR)
                                     {
-                                        //ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
-                                        ViewBag.Message = true;
-                                        return View(e);
+                                        ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
+                                        //return View(e);
+
+                                        status = true;
+
+
+                                        return new JsonResult(e, new { status = status });
                                     }
-
-                                    if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR && e.IdMeetR == item1.IdMeetR)
-                                    {
-                                        //ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
-                                        ViewBag.Message = String.Format("Lo sentimos, el número de personas es demaciado bajo para la sala.");
-                                        return View(e);
-                                    }
-
-                                    if (e.Start >= item1.Start)
-                                    {
-                                        if (e.End <= item1.End)
-                                        {
-                                            if (e.IdMeetR == item1.IdMeetR)
-                                            {
-                                                ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                                //return View(e);
-
-                                                status = true;
-
-
-                                                return new JsonResult(new { status = status });
-                                            }
-
-
-                                        }
-                                    }
-
-
 
 
                                 }
-
                             }
+
 
 
 
@@ -181,11 +173,26 @@ namespace BoardRoomSystem.Controllers
 
                         if (userIdValue == e.UserId)
                         {
+                            foreach (var item2 in meetRLst)
+                            {
+                                if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
+                                {
+                                    ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
+                                    return View(e);
+                                }
+
+                                if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
+                                {
+                                    ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
+                                    return View(e);
+                                }
+                            }
+
                             foreach (var item1 in eventLst)
                             {
                                 if (e.Start >= item1.Start)
                                 {
-                                    if (e.End <= item1.End)
+                                    if (e.End <= item1.End || item1.IsFullDay)
                                     {
                                         if (e.IdMeetR == item1.IdMeetR)
                                         {
@@ -195,7 +202,7 @@ namespace BoardRoomSystem.Controllers
                                             }
                                             else
                                             {
-                                                ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
+                                                ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
                                                 //return View(e);
 
                                                 status = true;
@@ -209,49 +216,39 @@ namespace BoardRoomSystem.Controllers
                                     }
                                 }
 
-
-
-
                             }
 
-                            foreach (var item2 in meetRLst)
+                            //Update the event
+                            var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                            if (v != null)
                             {
-                                if (e.NumOfPeople > item2.MaxNumbPeopleMeetR)
-                                {
-                                    ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                    status = true;
-
-                                    return new JsonResult(new { status = status });
-                                }
-                                //Update the event
-                                var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                                if (v != null)
-                                {
-                                    v.Subject = e.Subject;
-                                    v.Start = e.Start;
-                                    v.End = e.End;
-                                    v.Description = e.Description;
-                                    v.IsFullDay = e.IsFullDay;
-                                    v.NumOfPeople = e.NumOfPeople;
-                                    v.IdLocation = e.IdLocation;
-                                    v.IdMeetR = e.IdMeetR;
-                                    v.UserId = e.UserId;
-                                    v.IdArea = e.IdArea;
+                                v.Subject = e.Subject;
+                                v.Start = e.Start;
+                                v.End = e.End;
+                                v.Description = e.Description;
+                                v.IsFullDay = e.IsFullDay;
+                                v.NumOfPeople = e.NumOfPeople;
+                                v.IdLocation = e.IdLocation;
+                                v.IdMeetR = e.IdMeetR;
+                                v.UserId = e.UserId;
+                                v.IdArea = e.IdArea;
 
 
-                                    dc.SaveChanges();
+                                dc.SaveChanges();
 
-                                    status = true;
+                                status = true;
 
 
-                                    return new JsonResult(new { status = status });
+                                return new JsonResult(new { status = status });
 
-                                }
                             }
 
 
-
-
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Lo sentimos, usted no puede editar reservaciones de otros usuarios.";
+                            return View(e);
                         }
 
 
@@ -265,79 +262,80 @@ namespace BoardRoomSystem.Controllers
             {
                 foreach (var item2 in meetRLst)
                 {
-
-                    foreach (var item1 in eventLst)
+                    if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                     {
-                        
+                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
+                        return View(e);
+                    }
 
-                        if (e.Start >= item1.Start)
+                    if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
+                    {
+                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
+                        return View(e);
+                    }
+                }
+
+                foreach (var item1 in eventLst)
+                {
+
+                    if (e.Start >= item1.Start)
+                    {
+                        if (e.End <= item1.End || item1.IsFullDay)
                         {
-                            if (e.End <= item1.End)
+                            if (e.IdMeetR == item1.IdMeetR)
                             {
-                                if (e.IdMeetR == item1.IdMeetR)
+                                if (e.EventID == item1.EventID)
                                 {
-                                    if (e.EventID == item1.EventID)
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        ViewBag.Message = "Lo sentimos, esta solicitud ya existe.";
-                                        //return View(e);
-
-                                        status = true;
-
-
-                                        return new JsonResult(new { status = status }, e);
-                                    }
-
+                                    continue;
                                 }
-                               
+                                else
+                                {
+                                    ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
+                                    //return View(e);
+
+                                    status = true;
+
+
+                                    return new JsonResult(new { status = status }, e);
+                                }
 
                             }
+
+
                         }
-
-                        
-
                     }
-                    if (e.NumOfPeople > item2.MaxNumbPeopleMeetR)
+
+
+
+                }
+
+
+                if (e.EventID > 0)
+                {
+                    //Update the event
+                    var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
+                    if (v != null)
                     {
-                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto.";
-                        //return View(e);
+                        v.Subject = e.Subject;
+                        v.Start = e.Start;
+                        v.End = e.End;
+                        v.Description = e.Description;
+                        v.IsFullDay = e.IsFullDay;
+                        v.NumOfPeople = e.NumOfPeople;
+                        v.IdLocation = e.IdLocation;
+                        v.IdMeetR = e.IdMeetR;
+                        v.UserId = e.UserId;
+                        v.IdArea = e.IdArea;
+
+
+                        dc.SaveChanges();
+
                         status = true;
 
 
-                        return new JsonResult(e, new { status = status });
+                        return new JsonResult(new { status = status });
                     }
 
-                    if (e.EventID > 0)
-                    {
-                        //Update the event
-                        var v = dc.Events.Where(a => a.EventID == e.EventID).FirstOrDefault();
-                        if (v != null)
-                        {
-                            v.Subject = e.Subject;
-                            v.Start = e.Start;
-                            v.End = e.End;
-                            v.Description = e.Description;
-                            v.IsFullDay = e.IsFullDay;
-                            v.NumOfPeople = e.NumOfPeople;
-                            v.IdLocation = e.IdLocation;
-                            v.IdMeetR = e.IdMeetR;
-                            v.UserId = e.UserId;
-                            v.IdArea = e.IdArea;
-
-
-                            dc.SaveChanges();
-
-                            status = true;
-
-
-                            return new JsonResult(new { status = status });
-                        }
-
-
-                    }
 
                 }
 

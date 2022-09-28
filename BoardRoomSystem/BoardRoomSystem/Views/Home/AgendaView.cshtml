@@ -94,7 +94,7 @@
                     header: {
                         left: 'prev,next today',
                         center: 'title',
-                        right: 'listDay, month, agendaDay'
+                        right: 'listDay, agendaDay'
                     },
                     defaultView: 'listDay',
                     locale: initialLocaleCode,
@@ -193,6 +193,9 @@
                     }
                 })
             };
+
+            
+
             GetLocations();
             $('#loc_selector').change(function () {
                 var id = $(this).val();
