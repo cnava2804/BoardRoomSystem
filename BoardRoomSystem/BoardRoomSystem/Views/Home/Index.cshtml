@@ -517,12 +517,12 @@
             });
 
             connection.on("ReciveDeleteEvent", function(EventId) {
-            console.log(EventId);
-                 if (EventId = true){
+                console.log(EventId);
+                if (EventId = true) {
                     FetchEventAndRenderCalendar();
-                 }
+                }
 
-            })
+            });
 
             $('#dtp1,#dtp2').datetimepicker({
                 format: 'DD/MM/YYYY HH:mm A'
