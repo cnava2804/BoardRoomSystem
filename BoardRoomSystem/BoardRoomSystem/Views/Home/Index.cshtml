@@ -445,8 +445,6 @@
                             IdArea: event.areaID
                         };
                         SaveEventEd(data);
-                      
-                        
                     }
                 })
             };
@@ -521,7 +519,6 @@
             connection.on("ReciveDeleteEvent", function(EventId) {
             console.log(EventId);
                  if (EventId = true){
-                    //window.location.href = "https://localhost:7069/";
                     FetchEventAndRenderCalendar();
                  }
 
@@ -603,19 +600,14 @@
                            title: 'Asunto requerido'})
                     return;
                 }
-                if ($('#txtLocation').val() == null) {
+                if ($('#txtLocation').val() == null || $('#txtLocation').val() == '--Seleccionar Ubicación--') {
                     Swal.fire({icon: 'question',
                            title: 'Seleccione una Ubicación.'})
                     return;
                 }
-                if ($('#txtRoom').val() == null) {
+                if ($('#txtRoom').val() == null || $('#txtRoom').val() == '--Seleccionar Sala--') {
                     Swal.fire({icon: 'question',
                            title: 'Seleccione una Sala.'})
-                    return;
-                }
-                if ($('#txtArea').val() == null) {
-                    Swal.fire({icon: 'question',
-                           title: 'Seleccione un Área.'})
                     return;
                 }
                 if ($('#txtStart').val().trim() == "") {
@@ -628,9 +620,14 @@
                            title: 'Fecha final requerida.'})
                     return;
                 }
-                if ($('#intNumOfPeople').val() == null) {
+                if ($('#intNumOfPeople').val() == null || $('#intNumOfPeople').val() == 0) {
                     Swal.fire({icon: 'question',
                            title: 'Número de personas requerido.'})
+                    return;
+                } 
+                if ($('#txtArea').val() == null || $('#txtArea').val() == '--Seleccionar Área--') {
+                    Swal.fire({icon: 'question',
+                           title: 'Seleccione un Área.'})
                     return;
                 }
                 
@@ -659,7 +656,6 @@
                     UserId: $('#hdUserID').val()
                 }
                 SaveEvent(data);
-                
 
                 // call function for submit data to the server
 
@@ -673,19 +669,14 @@
                            title: 'Asunto requerido'})
                     return;
                 }
-                if ($('#txtLocationEd').val() == null) {
+                if ($('#txtLocationEd').val() == null || $('#txtLocationEd').val() == '--Seleccionar Ubicación--') {
                     Swal.fire({icon: 'question',
                            title: 'Seleccione una Ubicación.'})
                     return;
                 }
-                if ($('#txtRoomEd').val() == null) {
+                if ($('#txtRoomEd').val() == null || $('#txtRoomEd').val() == '--Seleccionar Sala--') {
                     Swal.fire({icon: 'question',
                            title: 'Seleccione una Sala.'})
-                    return;
-                }
-                if ($('#txtAreaEd').val() == null) {
-                    Swal.fire({icon: 'question',
-                           title: 'Seleccione un Área.'})
                     return;
                 }
                 if ($('#txtStartEd').val().trim() == "") {
@@ -698,9 +689,14 @@
                            title: 'Fecha final requerida.'})
                     return;
                 }
-                if ($('#intNumOfPeopleEd').val() == null) {
+                if ($('#intNumOfPeopleEd').val() == null || $('#intNumOfPeopleEd').val() == 0) {
                     Swal.fire({icon: 'question',
                            title: 'Número de personas requerido.'})
+                    return;
+                }
+                if ($('#txtAreaEd').val() == null || $('#txtAreaEd').val() == '--Seleccionar Área--') {
+                    Swal.fire({icon: 'question',
+                           title: 'Seleccione un Área.'})
                     return;
                 }
                 else {
@@ -971,12 +967,6 @@
             $('#myModal').modal('hide');
             $('#myModalSave').modal();
         }
-
-        function alertValidation(){
-            alert('Hola mundo');
-        }
-
-    
 
     connection.start().then(function () {
         console.log("conectado");
