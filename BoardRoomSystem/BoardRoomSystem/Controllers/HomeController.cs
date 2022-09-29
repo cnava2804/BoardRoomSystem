@@ -85,15 +85,12 @@ namespace BoardRoomSystem.Controllers
                         {
                             if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                             {
-                                ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
-                                
-                                return View(e);
+                                return StatusCode(501, new { message = "error occurred" });
                             }
 
                             if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                             {
-                                ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
-                                return View(e);
+                                return StatusCode(502, new { message = "error occurred" });
                             }
                         }
 
@@ -106,13 +103,7 @@ namespace BoardRoomSystem.Controllers
                                 {
                                     if (e.IdMeetR == item1.IdMeetR)
                                     {
-                                        ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
-                                        //return View(e);
-
-                                        status = true;
-
-
-                                        return new JsonResult(e, new { status = status });
+                                        return StatusCode(503, new { message = "error occurred" });
                                     }
 
 
@@ -177,14 +168,12 @@ namespace BoardRoomSystem.Controllers
                             {
                                 if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                                 {
-                                    ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
-                                    return View(e);
+                                    return StatusCode(501, new { message = "error occurred" });
                                 }
 
                                 if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                                 {
-                                    ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
-                                    return View(e);
+                                    return StatusCode(502, new { message = "error occurred" });
                                 }
                             }
 
@@ -202,13 +191,7 @@ namespace BoardRoomSystem.Controllers
                                             }
                                             else
                                             {
-                                                ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
-                                                //return View(e);
-
-                                                status = true;
-
-
-                                                return new JsonResult(new { status = status }, e);
+                                                return StatusCode(503, new { message = "error occurred" });
                                             }
                                         }
 
@@ -247,8 +230,7 @@ namespace BoardRoomSystem.Controllers
                         }
                         else
                         {
-                            ViewBag.Message = "Lo sentimos, usted no puede editar reservaciones de otros usuarios.";
-                            return View(e);
+                            return StatusCode(504, new { message = "error occurred" });
                         }
 
 
@@ -264,14 +246,12 @@ namespace BoardRoomSystem.Controllers
                 {
                     if (e.NumOfPeople > item2.MaxNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                     {
-                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado alto para la sala.";
-                        return View(e);
+                        return StatusCode(501, new { message = "error occurred" });
                     }
 
                     if (e.NumOfPeople < item2.MinNumbPeopleMeetR && e.IdMeetR == item2.IdMeetR)
                     {
-                        ViewBag.Message = "Lo sentimos, el número de personas es demaciado bajo para la sala.";
-                        return View(e);
+                        return StatusCode(502, new { message = "error occurred" });
                     }
                 }
 
@@ -290,13 +270,7 @@ namespace BoardRoomSystem.Controllers
                                 }
                                 else
                                 {
-                                    ViewBag.Message = "Lo sentimos, ya existe una reservación en esa fecha y sala.";
-                                    //return View(e);
-
-                                    status = true;
-
-
-                                    return new JsonResult(new { status = status }, e);
+                                    return StatusCode(503, new { message = "error occurred" });
                                 }
 
                             }
@@ -424,10 +398,12 @@ namespace BoardRoomSystem.Controllers
                                     dc.Events.Remove(v);
                                     dc.SaveChanges();
                                     status = true;
+                                    return new JsonResult(new { status = status });
                                 }
                             }
                         }
-                        
+                        return StatusCode(505, new { message = "error occurred" });
+
                     }
                 }
             }
