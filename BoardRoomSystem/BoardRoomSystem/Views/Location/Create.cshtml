@@ -37,7 +37,44 @@
     </div>
 </div>
 
+@*-----Modal of Inactivity-----*@
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<div id="inactivity_warning" class="modal fade" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close inactivity_ok" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" style="color:FIREBRICK;">¡Aviso por Inactividad!</h4>
+   
+            </div>
+            <div class="modal-body">
+                <div class="row-fluid">
+                    <div id="custom_alert_message" class="span12">
+                        La sesión se cerrará en menos de 3 minutos debido a la inactividad en la página.
+                        Presione el botón de "Aceptar" para evitar que se cierre la sesión.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0)" class="btn btn-primary inactivity_ok" data-dismiss="modal" aria-hidden="true">Aceptar</a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<input id="user_activity" name="user_activity" type="hidden" value="active" />
+<input id="user_loged_in" name="user_loged_in" type="hidden" value="true" />
+                
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <script src="~/js/locale-all.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+   
+    <script src="~/js/TempAlertInactivity.js"></script>
+
+     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
