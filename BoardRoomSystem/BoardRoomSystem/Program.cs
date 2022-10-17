@@ -6,6 +6,7 @@ using BoardRoomSystem.Repositorio;
 using BoardRoomSystem.Repositories;
 using BoardRoomSystem.Core;
 using BoardRoomSystem.Hubs;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection");
@@ -82,4 +83,16 @@ void AddScoped()
     builder.Services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
     builder.Services.AddScoped<IRoleRepositorio, RoleRepositorio>();
     builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+        options.Cookie.Name = "YourAppCookieName";
+        options.Cookie.HttpOnly = true;
+        options.ExpireTimeSpan = TimeSpan.FromSeconds(600);
+        options.LoginPath = "/Identity/Account/Login";
+        // ReturnUrlParameter requires 
+        //using Microsoft.AspNetCore.Authentication.Cookies;
+        options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+        options.SlidingExpiration = true;
+    });
 }
